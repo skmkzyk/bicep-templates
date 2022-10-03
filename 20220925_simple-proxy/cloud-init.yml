@@ -1,0 +1,8 @@
+#cloud-config
+packages_update: true
+packages_upgrade: true
+packages:
+  - squid
+runcmd:
+  - sudo sed -i.org 's/#http_access allow localnet/http_access allow localnet/' /etc/squid/squid.conf
+  - systemctl restart squid
