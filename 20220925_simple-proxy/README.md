@@ -30,4 +30,5 @@ root@vm-hub00:/etc/squid# diff -u squid.conf.org squid.conf
 
 # 参考
 
-[File functions for Bicep - `loadFileAsBase64()`](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-files#loadfileasbase64)
+- [`loadFileAsBase64()` / Bicep functions - files - Azure Resource Manager | Microsoft Learn](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-files#loadfileasbase64)
+- [Cloud config examples - cloud-init 22.3 documentation](https://cloudinit.readthedocs.io/en/latest/topics/examples.html)
