@@ -1,0 +1,3 @@
+# Ignore parameter.json not to upload
+parameter.json
+parameter-securityRules.json
