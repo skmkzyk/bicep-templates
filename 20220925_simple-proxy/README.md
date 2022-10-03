@@ -27,3 +27,7 @@ root@vm-hub00:/etc/squid# diff -u squid.conf.org squid.conf
 
  # And finally deny all other access to this proxy
 ```
+
+# 参考
+
+[File functions for Bicep - `loadFileAsBase64()`](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-files#loadfileasbase64)
