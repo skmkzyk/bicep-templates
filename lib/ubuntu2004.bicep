@@ -3,6 +3,7 @@ param subnetId string
 param vmName string
 param adminUsername string = 'ikko'
 param keyData string
+param customData string = ''
 param enableNetWatchExtention bool = false
 param enableIPForwarding bool = false
 param usePublicIP bool = false
@@ -84,6 +85,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     osProfile: {
       computerName: vmName
       adminUsername: adminUsername
+      customData: customData
       linuxConfiguration: {
         disablePasswordAuthentication: true
         ssh: {
@@ -101,6 +103,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
         enabled: true
       }
     }
+    
   }
 
   resource netWatchExt 'extensions' = if (enableNetWatchExtention) {
