@@ -19,15 +19,25 @@ To establish connection from on-premise to hub-spoke architecture without Remote
 - 広報アドレスは VNet #2 全体としているが /32 も可能かも
 - NVA 代わりの Azure VM でパケットをフォワーディングする必要があるため `sysctl` で設定変更
 
-# install FRRouting & enable forwarding
+# install FRRouting & configure FRRouting, enable forwarding
 
-FRRouting のインストールなどは [Azure Route Server と FRRouting の間で BGP ピアを張る](https://zenn.dev/skmkzyk/articles/azure-route-server-frrouting) を参照ください。
+FRRouting の自動化までは `cloud-init` で済ませてあるので、`vtysh` を叩いて config を入れる部分に関しては、この README の後半を参照ください。
 
-それから、今回の構成では FRRouting が実際にパケットをフォワーディングする必要があるため、`sysctl` で設定を変更しておきます。
+また、`sysctl` にて IP forwarding を有効化する必要があるのですが、`cloud-init` で自動化してあるので不要です。
 
-```
-sudo sed -i.org 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
-sudo sysctl -p
+```yaml
+#cloud-config
+packages_update: true
+packages_upgrade: true
+runcmd:
+  - sed -i.org 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
+  - sysctl -p
+  - curl -s https://deb.frrouting.org/frr/keys.asc | apt-key add -
+  - FRRVER="frr-stable"
+  - echo deb https://deb.frrouting.org/frr $(lsb_release -s -c) $FRRVER | tee -a /etc/apt/sources.list.d/frr.list
+  - apt update && apt -y install frr frr-pythontools
+  - sed -i.org 's/bgpd=no/bgpd=yes/' /etc/frr/daemons
+  - systemctl restart frr
 ```
 
 # 結果
