@@ -85,7 +85,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     osProfile: {
       computerName: vmName
       adminUsername: adminUsername
-      customData: customData
+      customData: customData == '' ? null : customData
       linuxConfiguration: {
         disablePasswordAuthentication: true
         ssh: {
