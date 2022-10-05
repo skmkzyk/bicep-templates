@@ -226,3 +226,7 @@ RPKI validation codes: V valid, I invalid, N Not found
 
 Total number of prefixes 2
 ```
+
+# 参考
+
+- [Azure Route Server と FRRouting の間で BGP ピアを張る](https://zenn.dev/skmkzyk/articles/azure-route-server-frrouting)
