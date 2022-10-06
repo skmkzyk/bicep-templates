@@ -1,4 +1,5 @@
 # Ignore parameter.json not to upload
 parameter.json
+parameter-windowsAccount.json
 parameter-linuxAccount.json
 parameter-securityRules.json
