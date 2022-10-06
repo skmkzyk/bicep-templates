@@ -1,3 +1,4 @@
 # Ignore parameter.json not to upload
 parameter.json
+parameter-linuxAccount.json
 parameter-securityRules.json
