@@ -154,6 +154,6 @@ NVA シングル構成のため、本来は 2 台構成して LB おいて、NEX
 
 # 参考
 
-- [Azure Route Server と FRRouting の間で BGP ピアを張る](https://zenn.dev/skmkzyk/articles/azure-route-server-frrouting]
+- [Azure Route Server と FRRouting の間で BGP ピアを張る](https://zenn.dev/skmkzyk/articles/azure-route-server-frrouting)
 - [Azure ExpressRoute transit options](https://www.youtube.com/watch?v=x32SNdEaf-Q)
 - [Microsoft/Ethr](https://github.com/Microsoft/Ethr)

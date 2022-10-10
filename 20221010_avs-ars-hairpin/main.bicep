@@ -82,7 +82,7 @@ resource rt_hub00_GatewaySubnet 'Microsoft.Network/routeTables@2022-01-01' = {
   properties: {
     routes: [
       {
-        name: replace(replace(vnet_hub100.properties.addressSpace.addressPrefixes[0], '.', '_'), '/', '_')
+        name: replace(vnet_hub100.properties.addressSpace.addressPrefixes[0], '/', '_')
         properties: {
           addressPrefix: vnet_hub100.properties.addressSpace.addressPrefixes[0]
           nextHopType: 'VirtualAppliance'
@@ -90,7 +90,7 @@ resource rt_hub00_GatewaySubnet 'Microsoft.Network/routeTables@2022-01-01' = {
         }
       }
       {
-        name: replace(replace(vnet_hub200.properties.addressSpace.addressPrefixes[0], '.', '_'), '/', '_')
+        name: replace(vnet_hub200.properties.addressSpace.addressPrefixes[0], '/', '_')
         properties: {
           addressPrefix: vnet_hub200.properties.addressSpace.addressPrefixes[0]
           nextHopType: 'VirtualAppliance'
