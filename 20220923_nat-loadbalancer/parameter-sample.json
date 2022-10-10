@@ -1,0 +1,13 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "circuit01": {
+            "value": {
+                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/xxxxxxxx/providers/Microsoft.Network/expressRouteCircuits/cct-xxxxxxxx01 (Full length expression of ExpressRoute circuit.)",
+                "authorizationKey1": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (Authorization key for ExpressRoute circuit)",
+                "authorizationKey2": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            }
+        }
+    }
+}
