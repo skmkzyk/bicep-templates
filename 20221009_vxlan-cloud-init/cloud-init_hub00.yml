@@ -1,0 +1,37 @@
+#cloud-config
+packages_update: true
+packages_upgrade: true
+write_files:
+  - path: /etc/networkd-dispatcher/routable.d/50-ifup-hooks
+    content: |
+      #!/bin/sh
+
+      for d in up post-up; do
+          hookdir=/etc/network/if-${d}.d
+          [ -e $hookdir ] && /bin/run-parts $hookdir
+      done
+      exit 0
+  - path: /etc/networkd-dispatcher/off.d/50-ifdown-hooks
+    content: |
+      #!/bin/sh
+
+      for d in down post-down; do
+          hookdir=/etc/network/if-${d}.d
+          [ -e $hookdir ] && /bin/run-parts $hookdir
+      done
+      exit 0
+  - path: /etc/network/if-post-up.d/vxlan
+    content: |
+      #!/bin/sh
+
+      if [ "$IFACE" = "eth0" ]; then
+        ip link add vxlan0 type vxlan id 77 remote 10.10.0.4 dstport 4789 dev eth0
+        ip link set up vxlan0
+        ip address add 169.254.0.1/24 dev vxlan0
+      fi
+runcmd:
+  - chmod +x /etc/networkd-dispatcher/routable.d/50-ifup-hooks
+  - chmod +x /etc/networkd-dispatcher/off.d/50-ifdown-hooks
+  - mkdir -p /etc/network/if-post-up.d
+  - chmod u+x /etc/network/if-post-up.d/vxlan
+  - reboot
