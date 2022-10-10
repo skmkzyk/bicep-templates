@@ -20,7 +20,7 @@ resource pip_vpngw02 'Microsoft.Network/publicIPAddresses@2022-01-01' existing =
 }
 
 resource lng_vpngw02 'Microsoft.Network/localNetworkGateways@2022-01-01' = {
-  name: 'lng-${vpnGateway02Name}'
+  name: 'lng-${vpnGateway02Name}-${vpnGateway01Name}'
   location: location
   properties: {
     gatewayIpAddress: pip_vpngw02.properties.ipAddress

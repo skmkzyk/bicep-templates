@@ -88,4 +88,6 @@ resource extVpngw01 'Microsoft.Network/virtualNetworkGateways@2022-01-01' existi
 
 output vpngwName string = !useExisting ? vpngw01.name : extVpngw01.name
 output publicIp01Name string = pip01.name
+output publicIp01Address string = pip01.properties.ipAddress
 output publicIp02Name string = pip02.name
+output publicIp02Address string = pip02.properties.ipAddress
