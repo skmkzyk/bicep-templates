@@ -1,0 +1,89 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "kvName": {
+            "value": "xxxxxxxx (Azure Key Vault name which stores Windows admin password.)"
+        },
+        "kvRGName": {
+            "value": "xxxxxxxx (Resource Group name for above Azure Key Vault.)"
+        },
+        "secretName": {
+            "value": "xxxxxxxx (Secret name for admin password when deploying Windows Server.)"
+        },
+        "sshKeyRGName": {
+            "value": "xxxxxxxx (Resource group name for Public SSH key.)"
+        },
+        "publicKeyName": {
+            "value": "xxxxxxxx (Public SSH Key resource name.)"
+        },
+        "circuit01": {
+            "value": {
+                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/xxxxxxxx/providers/Microsoft.Network/expressRouteCircuits/cct-xxxxxxxx01 (Full length expression of ExpressRoute circuit.)",
+                "authorizationKey1": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (Authorization key for ExpressRoute circuit)",
+                "authorizationKey2": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            }
+        },
+        "AzureBastionSubnet_additional_securityRules": {
+            "value": [
+                {
+                    "name": "AllowGatewayManager",
+                    "properties": {
+                        "description": "Allow GatewayManager",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "443",
+                        "sourceAddressPrefix": "GatewayManager",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 2702,
+                        "direction": "Inbound"
+                    }
+                },
+                {
+                    "name": "AllowHttpsInBound",
+                    "properties": {
+                        "description": "Allow HTTPs",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "443",
+                        "sourceAddressPrefix": "Internet",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 2703,
+                        "direction": "Inbound"
+                    }
+                },
+                {
+                    "name": "AllowSshRdpOutbound",
+                    "properties": {
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 100,
+                        "direction": "Outbound",
+                        "destinationPortRanges": [
+                            "22",
+                            "3389"
+                        ]
+                    }
+                },
+                {
+                    "name": "AllowAzureCloudOutbound",
+                    "properties": {
+                        "protocol": "TCP",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "443",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "AzureCloud",
+                        "access": "Allow",
+                        "priority": 110,
+                        "direction": "Outbound"
+                    }
+                }
+            ]
+        }
+    }
+}
