@@ -3,6 +3,16 @@ param gatewayName string = 'ergw01'
 param vnetName string
 param useExisting bool = false
 
+@allowed([
+  'Standard'
+  'HighPerformance'
+  'UltraPerformance'
+  'ErGw1AZ'
+  'ErGw2AZ'
+  'ErGw3AZ'
+])
+param sku string = 'ErGw1AZ'
+
 resource vnet01 'Microsoft.Network/virtualNetworks@2022-01-01' existing =  {
   name: vnetName
 
@@ -33,8 +43,8 @@ resource ergw01 'Microsoft.Network/virtualNetworkGateways@2021-08-01' = if (!use
   location: location
   properties: {
     sku: {
-      name: 'ErGw1AZ'
-      tier: 'ErGw1AZ'
+      name: sku
+      tier: sku
     }
     ipConfigurations: [
       {
