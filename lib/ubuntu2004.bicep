@@ -3,6 +3,7 @@ param subnetId string
 param vmName string
 param adminUsername string = 'ikko'
 param keyData string
+param privateIpAddress string = ''
 param customData string = ''
 param enableNetWatchExtention bool = false
 param enableIPForwarding bool = false
@@ -35,7 +36,8 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
           subnet: {
             id: subnetId
           }
-          privateIPAllocationMethod: 'Dynamic'
+          privateIPAllocationMethod: privateIpAddress != '' ? 'Static' : 'Dynamic'
+          privateIPAddress: privateIpAddress != '' ? privateIpAddress : null
           publicIPAddress: usePublicIP ? { id: pip.id } : null
           loadBalancerBackendAddressPools: loadBalancerBackendAddressPoolsId != '' ? [
             { id: loadBalancerBackendAddressPoolsId }
