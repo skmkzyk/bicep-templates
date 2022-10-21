@@ -17,7 +17,7 @@ resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (usePublicIP)
   name: 'pip-${vmNameSuffix}'
   location: location
   sku: {
-    name: 'Basic'
+    name: 'Standard'
     tier: 'Regional'
   }
   properties: {
