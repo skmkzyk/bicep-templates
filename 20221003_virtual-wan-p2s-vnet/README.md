@@ -4,7 +4,7 @@ Azure AD 認証を用いた P2S VPN を Azure Virtual WAN で利用し、その�
 
 以下のテンプレートの少し発展形。
 
-https://github.com/skmkzyk/bicep-templates/tree/main/20220930_hub-spoke-wo-remote-gw
+https://github.com/skmkzyk/bicep-templates/tree/main/20221002_virtual-wan-p2s-azfw
 
 # 構成のポイント
 
