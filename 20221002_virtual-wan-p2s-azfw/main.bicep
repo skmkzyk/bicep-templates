@@ -32,7 +32,7 @@ resource vpnServerConf01 'Microsoft.Network/vpnServerConfigurations@2022-01-01' 
     aadAuthenticationParameters: {
       aadAudience: '41b23e61-6c1e-4545-b367-cd054e0ed4b4'
       aadIssuer: 'https://sts.windows.net/${tenantId}/'
-      aadTenant: '${environment().authentication.loginEndpoint}/${tenantId}/'
+      aadTenant: '${environment().authentication.loginEndpoint}${tenantId}/'
     }
     vpnAuthenticationTypes: [
       'AAD'
