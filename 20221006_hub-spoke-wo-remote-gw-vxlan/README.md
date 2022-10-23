@@ -158,4 +158,4 @@ Linux で Cisco の拡張 ping みたいなのができればいいんですが�
 
 # 参考
 
-- [Ubuntu Server 20.04 で post-up script を使う](https://zenn.dev/skmkzyk/articles/ubuntu-2004-post-up-script)
+- [Ubuntu Server 20.04 で VXLAN を構成する](https://zenn.dev/skmkzyk/articles/ubuntu-2004-vxlan)

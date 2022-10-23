@@ -33,11 +33,6 @@ https://ifconfig.me と https://www.ugtop.com でアクセス元の IP アドレ
 強制トンネリング環境を実現するため、`neighbor x.x.x.x default-originate` を利用している。
 
 ```
-root@vm-nva100:/home/ikko# vtysh
-
-Hello, this is FRRouting (version 8.3.1).
-Copyright 1996-2005 Kunihiro Ishiguro, et al.
-
 vm-nva100# show run
 Building configuration...
 

@@ -15,7 +15,7 @@
 今回は `cloud-init` を使って複数行の `conf` ファイルみたいなやつを作成するのを試します。
 
 vm-hub00 の方の `cloud-init` のファイルを参考までに張り付けておきます。
-内容としては、[Ubuntu Server 20.04 で post-up script を使う](https://zenn.dev/skmkzyk/articles/ubuntu-2004-post-up-script) のほぼ焼き直しです。
+内容としては、[Ubuntu Server 20.04 で VXLAN を構成する](https://zenn.dev/skmkzyk/articles/ubuntu-2004-vxlan) のほぼ焼き直しです。
 ファイルの作成、permission の設定、そのあと実際に反映させるために仕方なく `reboot` しています。
 ファイルの内容をそのまま `sh` してもいいかなという気もしますがあまり変なことをするのもあれなので素直に。
 
@@ -106,5 +106,5 @@ rtt min/avg/max/mdev = 1.028/1.209/1.505/0.181 ms
 
 # 参考
 
-- [Ubuntu Server 20.04 で post-up script を使う](https://zenn.dev/skmkzyk/articles/ubuntu-2004-post-up-script)
+- [Ubuntu Server 20.04 で VXLAN を構成する](https://zenn.dev/skmkzyk/articles/ubuntu-2004-vxlan)
 - [Module Reference — cloud-init 22.3 documentation](https://cloudinit.readthedocs.io/en/latest/topics/modules.html)
