@@ -2,6 +2,15 @@
 
 諸事情あって Remote Gateway が使えない Hub-Spoke 構成において、ExpressRoute 越しで通信させたい。
 
+## Remote Gateway 使わないシリーズ
+
+- Private Link Service の NAT を使う
+  - https://github.com/skmkzyk/bicep-templates/tree/main/20220923_nat-loadbalancer
+- ARS を使って NAT 無しで相互通信可能としたもの
+   - https://github.com/skmkzyk/bicep-templates/tree/main/20220930_hub-spoke-wo-remote-gw
+- VXLAN を使って NAT 無しで相互通信可能としたもの
+  - https://github.com/skmkzyk/bicep-templates/tree/main/20221006_hub-spoke-wo-remote-gw-vxlan
+
 # 前提条件
 
 - Hub-Spoke の構成ではあるものの、Spoke 側に ExpressRoute Gateway があり、Remote Gateway の設定が使えない

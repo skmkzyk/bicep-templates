@@ -4,6 +4,15 @@ Remote Gateway を構成せずに、構成したように hub-spoke の通信を
 
 To establish connection from on-premise to hub-spoke architecture without Remote Gateway settings.
 
+## Remote Gateway 使わないシリーズ
+
+- Private Link Service の NAT を使う
+  - https://github.com/skmkzyk/bicep-templates/tree/main/20220923_nat-loadbalancer
+- ARS を使って NAT 無しで相互通信可能としたもの
+   - https://github.com/skmkzyk/bicep-templates/tree/main/20220930_hub-spoke-wo-remote-gw
+- VXLAN を使って NAT 無しで相互通信可能としたもの
+  - https://github.com/skmkzyk/bicep-templates/tree/main/20221006_hub-spoke-wo-remote-gw-vxlan
+
 # 前提条件
 - 拠点が 2 つある
 - VNet が 2 つある
