@@ -1,0 +1,15 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "tenantId": {
+            "value": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (Azure AD tenant ID which is used for Azure VPN authentication.)"
+        },
+        "vpnClientRootCertificates": {
+            "value": {
+                "name": "p2srootcert_xxxxxxxx (name of VPN Client root certificate.)",
+                "publicCertData": "MIIC9zCCAd+g... (base64 encoded certificate itself.)"
+            }
+        }
+    }
+}
