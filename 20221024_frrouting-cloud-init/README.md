@@ -1,4 +1,4 @@
-# Crate FRRouting VM by cloud-init
+# Create FRRouting VM by cloud-init
 
 `cloud-init` を使って自動化しようシリーズのひとつで、今回は FRRouting を自動化します。
 config の投入までは自動化できていませんがいつか頑張りましょう
