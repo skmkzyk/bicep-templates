@@ -6,6 +6,10 @@ config の追加まで実現しました。
 
 # 構成のポイント
 
+実際に Azure Route Server (ARS) と接続するまでできているのが以下の directory なのであわせてご覧いただければと。
+
+https://github.com/skmkzyk/bicep-templates/tree/main/20220816_frrouting-ars-cloud-init
+
 Azure VM 側の Bicep での設定としては、NVA にするため `enableIPForwarding` を `true` としています。
 
 OS 内部の設定を担う `cloud-init` は FRRouting に書かれている [手順](https://deb.frrouting.org/) をそのまま文法に則って書き直しただけです。

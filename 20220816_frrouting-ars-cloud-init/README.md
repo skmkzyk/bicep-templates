@@ -5,6 +5,9 @@ FRRouting と Azure Route Server (ARS) との間の BGP peer を `cloud-init` �
 # 構成のポイント
 
 config は固まっていたので、`cloud-init.yml` に書いてそのまま実行するだけ。
+以下の directory にあるやつの発展形といえるかもしれない。
+
+https://github.com/skmkzyk/bicep-templates/tree/main/20221024_frrouting-cloud-init
 
 # 動作確認
 
