@@ -2,6 +2,15 @@
 
 複数の Hub-spoke があった場合に、その spoke 間の通信を ExpressRoute 折り返しで実現させるという話。
 
+## 複数の Hub-spoke の離れた spoke 同士で通信を可能にしようシリーズ
+
+- ExpressRoute circuit 折り返し
+  - https://github.com/skmkzyk/bicep-templates/tree/main/20220726_multi-hub-expressroute
+- Internet VPN 折り返し
+  - https://github.com/skmkzyk/bicep-templates/tree/main/20220725_multi-hub-vpn
+- Private IP VPN 折り返し
+  - 後で書く
+
 # 構成のポイント
 
 とくに難しいポイントは何もなく、シンプルに作成するのみです。
