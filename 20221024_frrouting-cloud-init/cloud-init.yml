@@ -1,6 +1,18 @@
 #cloud-config
 packages_update: true
 packages_upgrade: true
+write_files:
+  - path: /tmp/frr.conf
+    content: |
+      frr version 8.3.1
+      frr defaults traditional
+      hostname vm-hub00
+      log syslog informational
+      no ipv6 forwarding
+      service integrated-vtysh-config
+      !
+      ip route 10.0.210.0/24 10.0.0.1
+      !
 runcmd:
   - sed -i.org 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
   - sysctl -p
@@ -9,4 +21,5 @@ runcmd:
   - echo deb https://deb.frrouting.org/frr $(lsb_release -s -c) $FRRVER | tee -a /etc/apt/sources.list.d/frr.list
   - apt update && apt -y install frr frr-pythontools
   - sed -i.org 's/bgpd=no/bgpd=yes/' /etc/frr/daemons
+  - cp /tmp/frr.conf /etc/frr/frr.conf
   - systemctl restart frr
