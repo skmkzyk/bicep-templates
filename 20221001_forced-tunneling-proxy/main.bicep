@@ -6,22 +6,20 @@ param kvName string
 param kvRGName string
 param secretName string
 
-param sshKeyRGName string
-
-param isInitialDeploy bool = false
-var useExisting = !isInitialDeploy
-
-param publicKeyName string
-
 resource kv 'Microsoft.KeyVault/vaults@2021-10-01' existing = {
   name: kvName
   scope: resourceGroup(kvRGName)
 }
 
+param sshKeyRGName string
+param publicKeyName string
+
 resource public_key 'Microsoft.Compute/sshPublicKeys@2022-03-01' existing = {
   name: publicKeyName
   scope: resourceGroup(sshKeyRGName)
 }
+
+var useExisting = false
 
 param default_securityRules array
 param AzureBastionSubnet_additional_securityRules array
@@ -300,6 +298,7 @@ module vm_hub100 '../lib/ubuntu2004.bicep' = {
     keyData: public_key.properties.publicKey
     subnetId: filter(vnet_hub100.properties.subnets, subnet => subnet.name == 'default')[0].id
     vmName: vm100Name
+    customData: loadFileAsBase64('./cloud-init_nva.yml')
   }
 }
 
@@ -311,6 +310,7 @@ module vm_hub101 '../lib/ubuntu2004.bicep' = {
     keyData: public_key.properties.publicKey
     subnetId: filter(vnet_hub100.properties.subnets, subnet => subnet.name == 'default')[0].id
     vmName: vm101Name
+    customData: loadFileAsBase64('./cloud-init_proxy.yml')
   }
 }
 

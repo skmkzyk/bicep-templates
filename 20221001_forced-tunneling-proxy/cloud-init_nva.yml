@@ -1,0 +1,68 @@
+#cloud-config
+packages_update: true
+packages_upgrade: true
+write_files:
+  - path: /tmp/frr.conf
+    content: |
+      frr version 8.3.1
+      frr defaults traditional
+      hostname vm-nva100
+      log syslog informational
+      no ip forwarding
+      no ipv6 forwarding
+      service integrated-vtysh-config
+      !
+      ip route 10.100.210.0/24 10.0.0.1
+      !
+      router bgp 65001
+      neighbor 10.100.210.4 remote-as 65515
+      neighbor 10.100.210.4 ebgp-multihop 255
+      neighbor 10.100.210.5 remote-as 65515
+      neighbor 10.100.210.5 ebgp-multihop 255
+      !
+      address-family ipv4 unicast
+        neighbor 10.100.210.4 default-originate
+        neighbor 10.100.210.4 soft-reconfiguration inbound
+        neighbor 10.100.210.4 route-map rmap-bogon-asns in
+        neighbor 10.100.210.4 route-map rmap-azure-asns out
+        neighbor 10.100.210.5 default-originate
+        neighbor 10.100.210.5 soft-reconfiguration inbound
+        neighbor 10.100.210.5 route-map rmap-bogon-asns in
+        neighbor 10.100.210.5 route-map rmap-azure-asns out
+      exit-address-family
+      exit
+      !
+      bgp as-path access-list azure-asns seq 5 permit _65515_
+      bgp as-path access-list bogon-asns seq 5 permit _0_
+      bgp as-path access-list bogon-asns seq 10 permit _23456_
+      bgp as-path access-list bogon-asns seq 15 permit _1310[0-6][0-9]_|_13107[0-1]_
+      bgp as-path access-list bogon-asns seq 20 deny _65515_
+      bgp as-path access-list bogon-asns seq 25 permit ^65
+      !
+      route-map rmap-bogon-asns deny 5
+      match as-path bogon-asns
+      exit
+      !
+      route-map rmap-bogon-asns permit 10
+      exit
+      !
+      route-map rmap-azure-asns deny 5
+      match as-path azure-asns
+      exit
+      !
+      route-map rmap-azure-asns permit 10
+      exit
+      !
+      end
+runcmd:
+  # enable IP forwarding
+  - sed -i.org 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
+  - sysctl -p
+  # install FRRouting
+  - curl -s https://deb.frrouting.org/frr/keys.asc | apt-key add -
+  - FRRVER="frr-stable"
+  - echo deb https://deb.frrouting.org/frr $(lsb_release -s -c) $FRRVER | tee -a /etc/apt/sources.list.d/frr.list
+  - apt update && apt -y install frr frr-pythontools
+  - sed -i.org 's/bgpd=no/bgpd=yes/' /etc/frr/daemons
+  - cp /tmp/frr.conf /etc/frr/frr.conf
+  - systemctl restart frr

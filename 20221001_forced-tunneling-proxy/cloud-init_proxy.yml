@@ -1,0 +1,23 @@
+#cloud-config
+packages_update: true
+packages_upgrade: true
+packages:
+  - squid
+  - nginx
+write_files:
+  - path: /tmp/proxy.pac
+    content: |
+      function FindProxyForURL(url, host) {
+        if (dnsDomainIs(host, "ifconfig.me")) {
+            return "DIRECT";
+        }
+      
+        // DEFAULT RULE: All other traffic, use below proxies, in fail-over order.
+        return "PROXY 10.100.0.5:3128";
+      }
+runcmd:
+  # squid
+  - sed -i.org 's/#http_access allow localnet/http_access allow localnet/' /etc/squid/squid.conf
+  - systemctl restart squid  
+  # nginx
+  - cp /tmp/proxy.pac /var/www/html/

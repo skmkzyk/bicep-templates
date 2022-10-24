@@ -10,14 +10,135 @@
 
 # 構成のポイント
 
-- 強制トンネリング環境を再現するため、オンプレミス環境を模した VNet 側に ARS (Azure Route Server) を置く
+`cloud-init` でなるべく自動的に構成する
+- 手動で設定が必要なのは Windows Server 側の pac file 参照の部分のみ
+
+NVA と Azure Route Server (ARS) で強制トンネリング環境を作る
+- 強制トンネリング環境を再現するため、オンプレミス環境を模した VNet 側に ARS を置く
 - FRRouting を用いて NVA を構成し、`default-originate` を利用して `0.0.0.0/0` を経路広報する
+
+proxy 兼 Web server を構築する
 - オンプレミス環境の proxy は Squid で構築
-- 同 proxy に nginx をインストールし、proxy.pac を公開する
+- 同 server に nginx をインストールし、proxy.pac を公開する
 - proxy.pac 上で、オンプレミス proxy に向けるものと、インターネットに直接出すものを分類する
+
+client となる Windows Server の構成
 - インターネットに直接出すものに関しては UDR (User Defined Route) で `0.0.0.0/0` を上書きしている (この subnet に関しては強制トンネリングが効いていない)
 
-# 結果
+# `cloud-init` の自動構成の確認
+
+proxy 兼 pac file 配布 server 役の vm-proxy100 が `cloud-init` で自動構成されていることを確認。
+
+```
+ikko@vm-proxy100:~$ sudo systemctl status squid
+● squid.service - Squid Web Proxy Server
+     Loaded: loaded (/lib/systemd/system/squid.service; enabled; vendor preset: enabled)
+     Active: active (running) since Tue 2022-10-25 08:40:12 UTC; 17min ago
+       Docs: man:squid(8)
+   Main PID: 2555 (squid)
+      Tasks: 4 (limit: 9530)
+     Memory: 15.7M
+     CGroup: /system.slice/squid.service
+             ├─2555 /usr/sbin/squid -sYC
+             ├─2557 (squid-1) --kid squid-1 -sYC
+             ├─2571 (logfile-daemon) /var/log/squid/access.log
+             └─2573 (pinger)
+
+Oct 25 08:40:12 vm-proxy100 squid[2557]: Max Swap size: 0 KB
+Oct 25 08:40:12 vm-proxy100 squid[2557]: Using Least Load store dir selection
+Oct 25 08:40:12 vm-proxy100 squid[2557]: Set Current Directory to /var/spool/squid
+Oct 25 08:40:12 vm-proxy100 squid[2557]: Finished loading MIME types and icons.
+Oct 25 08:40:12 vm-proxy100 squid[2557]: HTCP Disabled.
+Oct 25 08:40:12 vm-proxy100 squid[2557]: Pinger socket opened on FD 14
+Oct 25 08:40:12 vm-proxy100 squid[2557]: Squid plugin modules loaded: 0
+Oct 25 08:40:12 vm-proxy100 squid[2557]: Adaptation support is off.
+Oct 25 08:40:12 vm-proxy100 squid[2557]: Accepting HTTP Socket connections at local=[::]:3128 remote=[::] FD 12 flags=9
+Oct 25 08:40:13 vm-proxy100 squid[2557]: storeLateRelease: released 0 objects
+
+ikko@vm-proxy100:~$ diff -u /etc/squid/squid.conf.org /etc/squid/squid.conf
+--- /etc/squid/squid.conf.org   2022-09-23 12:07:31.000000000 +0000
++++ /etc/squid/squid.conf       2022-10-25 08:40:17.022101413 +0000
+@@ -1404,7 +1404,7 @@
+ # Example rule allowing access from your local networks.
+ # Adapt localnet in the ACL section to list your (internal) IP networks
+ # from where browsing should be allowed
+-#http_access allow localnet
++http_access allow localnet
+ http_access allow localhost
+
+ # And finally deny all other access to this proxy
+
+ikko@vm-proxy100:~$ sudo systemctl status nginx
+● nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
+     Active: active (running) since Tue 2022-10-25 08:40:13 UTC; 17min ago
+       Docs: man:nginx(8)
+   Main PID: 2629 (nginx)
+      Tasks: 3 (limit: 9530)
+     Memory: 5.4M
+     CGroup: /system.slice/nginx.service
+             ├─2629 nginx: master process /usr/sbin/nginx -g daemon on; master_process on;
+             ├─2630 nginx: worker process
+             └─2631 nginx: worker process
+
+Oct 25 08:40:13 vm-proxy100 systemd[1]: Starting A high performance web server and a reverse proxy server...
+Oct 25 08:40:13 vm-proxy100 systemd[1]: Started A high performance web server and a reverse proxy server.
+
+ikko@vm-proxy100:~$ ls /var/www/html/
+index.nginx-debian.html  proxy.pac
+```
+
+Azure Route Server (ARS) に対して強制トンネリング (forced tunneling) の役割を持つ vm-nva100 も `cloud-init` で自動構成されていることを確認。
+
+```
+ikko@vm-nva100:~$ sudo systemctl status frr
+● frr.service - FRRouting
+     Loaded: loaded (/lib/systemd/system/frr.service; enabled; vendor preset: enabled)
+     Active: active (running) since Tue 2022-10-25 09:02:54 UTC; 22min ago
+       Docs: https://frrouting.readthedocs.io/en/latest/setup.html
+   Main PID: 3018 (watchfrr)
+     Status: "FRR Operational"
+      Tasks: 13 (limit: 9530)
+     Memory: 22.2M
+     CGroup: /system.slice/frr.service
+             ├─3018 /usr/lib/frr/watchfrr -d -F traditional zebra bgpd staticd
+             ├─3031 /usr/lib/frr/zebra -d -F traditional -A 127.0.0.1 -s 90000000
+             ├─3036 /usr/lib/frr/bgpd -d -F traditional -A 127.0.0.1
+             └─3043 /usr/lib/frr/staticd -d -F traditional -A 127.0.0.1
+
+Oct 25 09:02:54 vm-nva100 watchfrr[3018]: [YFT0P-5Q5YX] Forked background command [pid 3019]: /usr/lib/frr/watchfrr.sh restart all
+Oct 25 09:02:54 vm-nva100 zebra[3031]: [VTVCM-Y2NW3] Configuration Read in Took: 00:00:00
+Oct 25 09:02:54 vm-nva100 bgpd[3036]: [VTVCM-Y2NW3] Configuration Read in Took: 00:00:00
+Oct 25 09:02:54 vm-nva100 staticd[3043]: [VTVCM-Y2NW3] Configuration Read in Took: 00:00:00
+Oct 25 09:02:54 vm-nva100 watchfrr[3018]: [QDG3Y-BY5TN] zebra state -> up : connect succeeded
+Oct 25 09:02:54 vm-nva100 watchfrr[3018]: [QDG3Y-BY5TN] bgpd state -> up : connect succeeded
+Oct 25 09:02:54 vm-nva100 watchfrr[3018]: [QDG3Y-BY5TN] staticd state -> up : connect succeeded
+Oct 25 09:02:54 vm-nva100 watchfrr[3018]: [KWE5Q-QNGFC] all daemons up, doing startup-complete notify
+Oct 25 09:02:54 vm-nva100 frrinit.sh[3008]:  * Started watchfrr
+Oct 25 09:02:54 vm-nva100 systemd[1]: Started FRRouting.
+
+ikko@vm-nva100:~$ sudo -s
+root@vm-nva100:/home/ikko# vtysh
+
+Hello, this is FRRouting (version 8.3.1).
+Copyright 1996-2005 Kunihiro Ishiguro, et al.
+
+vm-nva100# show ip bgp sum
+
+IPv4 Unicast Summary (VRF default):
+BGP router identifier 10.100.0.4, local AS number 65001 vrf-id 0
+BGP table version 0
+RIB entries 3, using 576 bytes of memory
+Peers 2, using 1447 KiB of memory
+
+Neighbor        V         AS   MsgRcvd   MsgSent   TblVer  InQ OutQ  Up/Down State/PfxRcd   PfxSnt Desc
+10.100.210.4    4      65515        27        24        0    0    0 00:21:01            2        1 N/A
+10.100.210.5    4      65515        27        23        0    0    0 00:20:59            2        1 N/A
+
+Total number of neighbors 2
+```
+
+# クライアント目線での動作確認
 
 https://ifconfig.me と https://www.ugtop.com でアクセス元の IP アドレスが異なっている。
 それぞれ IP が異なって見えており、proxy 経由と直接接続の差となっている。
@@ -109,44 +230,20 @@ Originating default network 0.0.0.0/0
 # proxy.pac sample
 
 [こちら](https://findproxyforurl.com/example-pac-file/) を参考に適当に修正。
-有効なのは `dnsDomainIs` のあるほんの一部分と、最後の `DIRECT` の部分のみ。
+`ifconfig.me` に行くときには DIRECT、それ以外は proxy 経由とする。
 
 ```
-ikko@vm-proxy100:/var/www/html$ cat proxy.pac
+ikko@vm-proxy100:~$ cat /var/www/html/proxy.pac
 function FindProxyForURL(url, host) {
-    // If the hostname matches, send direct.
-    // if (dnsDomainIs(host, "intranet.domain.com") ||
-    //     shExpMatch(host, "(*.abcdomain.com|abcdomain.com)"))
-    //     return "DIRECT";
+  if (dnsDomainIs(host, "ifconfig.me")) {
+      return "DIRECT";
+  }
 
-    if (dnsDomainIs(host, "ifconfig.me")) {
-        return "DIRECT";
-    }
-
-    // If the protocol or URL matches, send direct.
-    // if (url.substring(0, 4) == "ftp:" ||
-    //     shExpMatch(url, "http://abcdomain.com/folder/*"))
-    //     return "DIRECT";
-
-    // If the requested website is hosted within the internal network, send direct.
-    // if (isPlainHostName(host) ||
-    //     shExpMatch(host, "*.local") ||
-    //     isInNet(dnsResolve(host), "10.0.0.0", "255.0.0.0") ||
-    //     isInNet(dnsResolve(host), "172.16.0.0", "255.240.0.0") ||
-    //     isInNet(dnsResolve(host), "192.168.0.0", "255.255.0.0") ||
-    //     isInNet(dnsResolve(host), "127.0.0.0", "255.255.255.0"))
-    //     return "DIRECT";
-
-    // If the IP address of the local machine is within a defined
-    // subnet, send to a specific proxy.
-    // if (isInNet(myIpAddress(), "10.10.5.0", "255.255.255.0"))
-    //     return "PROXY 1.2.3.4:8080";
-
-    // DEFAULT RULE: All other traffic, use below proxies, in fail-over order.
-    return "PROXY 10.100.0.5:3128";
+  // DEFAULT RULE: All other traffic, use below proxies, in fail-over order.
+  return "PROXY 10.100.0.5:3128";
 }
 ```
 
-Windows Server 側ではこのような設定、特に珍しいことは何もない。
+Windows Server 側ではこのような設定、珍しいことは何もない。
 
 ![proxy settings](./proxy-settings.png)
