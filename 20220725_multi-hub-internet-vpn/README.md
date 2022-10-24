@@ -7,7 +7,7 @@
 - ExpressRoute circuit 折り返し
   - https://github.com/skmkzyk/bicep-templates/tree/main/20220726_multi-hub-expressroute
 - Internet VPN 折り返し
-  - https://github.com/skmkzyk/bicep-templates/tree/main/20220725_multi-hub-vpn
+  - https://github.com/skmkzyk/bicep-templates/tree/main/20220725_multi-hub-internet-vpn
 - Private IP VPN 折り返し
   - 後で書く
 
