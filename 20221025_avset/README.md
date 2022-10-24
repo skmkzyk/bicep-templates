@@ -4,7 +4,7 @@
 
 # 構成のポイント
 
-ポイント、というほどでもないんですが、Microsoft.Compute/availabilitySets の `sku` には 2 種類あって、デフォルトだと `'cCassic'` でこれは非管理ディスク (Unmanaged disk) を使う Azure VM 向けとなっています。
+ポイント、というほどでもないんですが、Microsoft.Compute/availabilitySets の `sku` には 2 種類あって、デフォルトだと `'Classic'` でこれは非管理ディスク (Unmanaged disk) を使う Azure VM 向けとなっています。
 そのため、明示的に `sku` として `'Alligned'` を選択する必要があります。
 
 # 参考
