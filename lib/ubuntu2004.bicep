@@ -8,6 +8,7 @@ param customData string = ''
 param enableNetWatchExtention bool = false
 param enableIPForwarding bool = false
 param usePublicIP bool = false
+param avsetId string = ''
 param applicationGatewayBackendAddressPoolsId string = ''
 param loadBalancerBackendAddressPoolsId string = ''
 
@@ -105,7 +106,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
         enabled: true
       }
     }
-    
+    availabilitySet: avsetId == '' ? null : { id: avsetId }
   }
 
   resource netWatchExt 'extensions' = if (enableNetWatchExtention) {
