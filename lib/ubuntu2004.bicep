@@ -23,6 +23,7 @@ resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (usePublicIP)
   }
   properties: {
     publicIPAllocationMethod: 'Static'
+    deleteOption: 'Delete'
   }
 }
 

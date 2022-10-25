@@ -5,8 +5,22 @@ param adminUsername string = 'ikko'
 @secure()
 param adminPassword string
 param enableNetWatchExtention bool = false
+param usePublicIP bool = false
 
 var vmNameSuffix = replace(vmName, 'vm-', '')
+
+resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (usePublicIP) {
+  name: 'pip-${vmNameSuffix}'
+  location: location
+  sku: {
+    name: 'Standard'
+    tier: 'Regional'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
+    deleteOption: 'Delete'
+  }
+}
 
 resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
   name: 'nic-${vmNameSuffix}'
@@ -20,6 +34,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
             id: subnetId
           }
           privateIPAllocationMethod: 'Dynamic'
+          publicIPAddress: usePublicIP ? { id: pip.id } : null
         }
       }
     ]
