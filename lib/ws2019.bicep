@@ -4,6 +4,7 @@ param vmName string
 param adminUsername string = 'ikko'
 @secure()
 param adminPassword string
+param privateIpAddress string = ''
 param enableNetWatchExtention bool = false
 param usePublicIP bool = false
 
@@ -33,7 +34,8 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
           subnet: {
             id: subnetId
           }
-          privateIPAllocationMethod: 'Dynamic'
+          privateIPAllocationMethod: privateIpAddress != '' ? 'Static' : 'Dynamic'
+          privateIPAddress: privateIpAddress != '' ? privateIpAddress : null
           publicIPAddress: usePublicIP ? { id: pip.id } : null
         }
       }
