@@ -7,6 +7,7 @@ param adminPassword string
 param privateIpAddress string = ''
 param enableNetWatchExtention bool = false
 param usePublicIP bool = false
+param loadBalancerBackendAddressPoolsId string = ''
 
 var vmNameSuffix = replace(vmName, 'vm-', '')
 
@@ -37,6 +38,9 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
           privateIPAllocationMethod: privateIpAddress != '' ? 'Static' : 'Dynamic'
           privateIPAddress: privateIpAddress != '' ? privateIpAddress : null
           publicIPAddress: usePublicIP ? { id: pip.id } : null
+          loadBalancerBackendAddressPools: loadBalancerBackendAddressPoolsId != '' ? [
+            { id: loadBalancerBackendAddressPoolsId }
+          ] : []
         }
       }
     ]
