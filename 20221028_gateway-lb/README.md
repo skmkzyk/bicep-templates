@@ -50,3 +50,7 @@ https://zenn.dev/openjny/articles/793fa510825a60
 - VXLAN の構成についてはこちらが参考になります
 
 https://zenn.dev/skmkzyk/articles/vxlan-cloud-init
+
+- Azure Load Balancer の Bicep resource definition、結局参考にするのはここなのよ
+
+https://learn.microsoft.com/en-us/azure/templates/microsoft.network/loadbalancers
