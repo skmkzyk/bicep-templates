@@ -20,7 +20,7 @@ VXLAN と bridge の構成については参考のサイトを大いに参考に
   - 構成自体はせっかくなので clout-init で構成しています
   - この Azure VM にアクセスするため Azure Bastion を作成してあります
   - Standard Load Balancer の Public IP が Zone-Redundant な時に、Gateway Load Balancer の `frontendIPConfigurations` も Zone-Redundant にしないとどうもうまくいかないように見えます
-    ```json
+    ```
     frontendIPConfigurations: [
         {
             name: fipc10Name
