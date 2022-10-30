@@ -1,0 +1,59 @@
+#cloud-config
+packages_update: true
+packages_upgrade: true
+write_files:
+  - path: /etc/networkd-dispatcher/routable.d/50-ifup-hooks
+    content: |
+      #!/bin/sh
+
+      for d in up post-up; do
+          hookdir=/etc/network/if-${d}.d
+          [ -e $hookdir ] && /bin/run-parts $hookdir
+      done
+      exit 0
+  - path: /etc/networkd-dispatcher/off.d/50-ifdown-hooks
+    content: |
+      #!/bin/sh
+
+      for d in down post-down; do
+          hookdir=/etc/network/if-${d}.d
+          [ -e $hookdir ] && /bin/run-parts $hookdir
+      done
+      exit 0
+  - path: /etc/network/if-post-up.d/vxlan
+    content: |
+      #!/bin/sh
+
+      dev="eth0"
+      remote="10.10.0.4"
+      in_port=10800
+      in_vni=800
+      ex_port=10801
+      ex_vni=801
+
+      if [ "$IFACE" = $dev ]; then
+        # add bridge
+        ip link add dev br0 type bridge
+        ip address add dev br0 192.168.255.1/28
+        ip link set br0 up
+
+        # add interfaces
+        ip link add vxlan-in type vxlan id $in_vni remote $remote dstport $in_port dev $dev
+        ip link add vxlan-ex type vxlan id $ex_vni remote $remote dstport $ex_port dev $dev
+
+        ip address add 192.168.255.2/28 dev vxlan-in
+        ip address add 192.168.255.3/28 dev vxlan-ex
+
+        ip link set vxlan-in master br0
+        ip link set vxlan-ex master br0
+
+        ip link set vxlan-in up
+        ip link set vxlan-ex up
+      fi
+runcmd:
+  - chmod +x /etc/networkd-dispatcher/routable.d/50-ifup-hooks
+  - chmod +x /etc/networkd-dispatcher/off.d/50-ifdown-hooks
+  - mkdir -p /etc/network/if-post-up.d
+  - chmod u+x /etc/network/if-post-up.d/vxlan
+  - reboot
+
