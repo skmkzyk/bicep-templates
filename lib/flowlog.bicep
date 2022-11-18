@@ -15,7 +15,7 @@ resource st 'Microsoft.Storage/storageAccounts@2021-09-01' existing = {
 }
 
 resource netWatch 'Microsoft.Network/networkWatchers@2022-01-01' existing = {
-  name: 'NetworkWatcher_eastasia'
+  name: 'NetworkWatcher_${location}'
 }
 
 var flowLogSuffix = uniqueString('${nsgName}-${nsgRGName}')
@@ -29,4 +29,3 @@ resource flowLog 'Microsoft.Network/networkWatchers/flowLogs@2022-01-01' = {
     enabled: true
   }
 }
-
