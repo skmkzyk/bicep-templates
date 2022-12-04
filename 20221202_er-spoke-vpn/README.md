@@ -1,4 +1,4 @@
-# ER + VPN のちょっと変わった構成を試してみる
+# A different architecture pattern for ER + VPN
 
 ER + VPN といえば以下のページを参照することが多いです。
 
@@ -6,6 +6,11 @@ https://learn.microsoft.com/ja-jp/azure/vpn-gateway/site-to-site-vpn-private-pee
 
 ですが、ここでは ExpressRoute Gateway のある VNet と VPN Gateway のある VNet が分かれている構成を考えてみます。
 なんでやりたいのかといわれると、思いついたから、までなのですが、ちょっとやってみます。
+
+Zenn の記事はこちらです。
+併せてごらんくださいませ。
+
+https://zenn.dev/skmkzyk/articles/er-spoke-vpn
 
 # 構成のポイント
 
@@ -18,9 +23,12 @@ https://learn.microsoft.com/ja-jp/azure/vpn-gateway/site-to-site-vpn-private-pee
 - Hub に ARS (Azure Route Server) と FRRouting を入れた Azure VM を用意する
   - FRRouting は Spoke 側の GatewaySubnet 部分のみを経路広報します
   - これにより、on-premise 側の Cisco まで reachability があるようにします
+  - この Azure VM は IP Forwarding を Azure 側、OS 側の双方で有効化してあります
 - Spoke に Private IP address を有効化した VPN Gateway をデプロイします
   - Private IP address 機能を有効にできる SKU は少し限定されているので注意してください
   - VPN Gateway の宛先となる Local Network Gateway には Cisco の loopback アドレスを入れておきます
+  - この GatewaySubnet において、10.100.20.1/32 あての明示的な UDR を入れておき、on-premise 側への通信が NVA を経由するようにします
+    - NVA から Spoke 側に ARS を使って伝える方法も可能かと思いますが、コストがかかるので UDR で済ませています
 - on-premise 側 Cisco Router を設定します
   - Connection を作成した後 Azure Portal から "Download configuration" からダウンロードできる config はそのままでは使えなかったので修正が必要です
   - 具体的には、`tunnel destination 10.10.200.6` などで指定される IP アドレスが Public IP address のままなので適宜変える必要があります
@@ -292,10 +300,12 @@ router bgp 65150
  neighbor 10.10.200.6 remote-as 65155
  neighbor 10.10.200.6 ebgp-multihop 255
  neighbor 10.10.200.6 update-source Loopback0
+ neighbor 10.10.200.6 soft-reconfiguration inbound
  neighbor 10.10.200.6 prefix-list VPNBGP01 out
  neighbor 10.10.200.7 remote-as 65155
  neighbor 10.10.200.7 ebgp-multihop 255
  neighbor 10.10.200.7 update-source Loopback0
+ neighbor 10.10.200.7 soft-reconfiguration inbound
  neighbor 10.10.200.7 prefix-list VPNBGP01 out
  neighbor 172.16.0.2 remote-as 12076
  neighbor 172.16.0.2 soft-reconfiguration inbound
@@ -355,6 +365,6 @@ end
 
   https://zenn.dev/skmkzyk/articles/azure-route-server-frrouting
 
-- Hub-spoke architecture without Remote gateway with VXLAN]
+- Hub-spoke architecture without Remote gateway with VXLAN
 
   https://github.com/skmkzyk/bicep-templates/tree/main/20221006_hub-spoke-wo-remote-gw-vxlan
