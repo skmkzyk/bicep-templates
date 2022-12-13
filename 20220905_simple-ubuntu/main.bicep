@@ -1,4 +1,4 @@
-param location01 string = 'eastasia'
+param location01 string = resourceGroup().location
 
 param sshKeyRGName string
 param publicKeyName string
