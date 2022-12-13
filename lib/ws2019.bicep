@@ -8,6 +8,7 @@ param privateIpAddress string = ''
 param enableNetWatchExtention bool = false
 param usePublicIP bool = false
 param loadBalancerBackendAddressPoolsId string = ''
+param zones array = []
 
 var vmNameSuffix = replace(vmName, 'vm-', '')
 
@@ -50,6 +51,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
 resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   name: vmName
   location: location
+  zones: zones
   properties: {
     hardwareProfile: {
       vmSize: 'Standard_B2ms'
