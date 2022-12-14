@@ -1,4 +1,6 @@
 param location string = 'eastasia'
+param zones array = []
+
 param subnetId string
 param vmName string
 param adminUsername string = 'ikko'
@@ -8,7 +10,6 @@ param privateIpAddress string = ''
 param enableNetWatchExtention bool = false
 param usePublicIP bool = false
 param loadBalancerBackendAddressPoolsId string = ''
-param zones array = []
 
 var vmNameSuffix = replace(vmName, 'vm-', '')
 
