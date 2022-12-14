@@ -1,4 +1,6 @@
 param location string = 'eastasia'
+param zones array = []
+
 param subnetId string
 param vmName string
 param adminUsername string = 'ikko'
@@ -57,6 +59,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
 resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   name: vmName
   location: location
+  zones: zones
   properties: {
     hardwareProfile: {
       vmSize: 'Standard_B2ms'
