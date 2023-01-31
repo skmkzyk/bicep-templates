@@ -5,11 +5,15 @@ param subnetId string
 param vmName string
 param adminUsername string = 'ikko'
 param keyData string
+
+param vmSize string = 'Standard_B2ms'
+param enableManagedIdentity bool = false
 param privateIpAddress string = ''
 param customData string = ''
 param enableNetWatchExtention bool = false
 param enableIPForwarding bool = false
 param usePublicIP bool = false
+param enableAcceleratedNetworking bool = false
 param avsetId string = ''
 param applicationGatewayBackendAddressPoolsId string = ''
 param loadBalancerBackendAddressPoolsId string = ''
@@ -53,16 +57,18 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
       }
     ]
     enableIPForwarding: enableIPForwarding
+    enableAcceleratedNetworking: enableAcceleratedNetworking
   }
 }
 
 resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   name: vmName
   location: location
+  identity: enableManagedIdentity ? { type: 'SystemAssigned' } : null
   zones: zones
   properties: {
     hardwareProfile: {
-      vmSize: 'Standard_B2ms'
+      vmSize: vmSize
     }
     storageProfile: {
       osDisk: {
@@ -146,3 +152,4 @@ output vmName string = vm.name
 output vmId string = vm.id
 output nicName string = nic.name
 output privateIP string = nic.properties.ipConfigurations[0].properties.privateIPAddress
+output principalId string = enableManagedIdentity ? vm.identity.principalId : ''
