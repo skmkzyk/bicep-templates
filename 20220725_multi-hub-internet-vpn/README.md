@@ -121,3 +121,7 @@ Tracing route to 10.120.0.4 over 30 hops:
  1.|--10.120.0.4 []                                                          9.009ms
 Ethr done, measurement complete.
 ```
+
+# 参考
+
+- [複数の Hub-spoke アーキテクチャで spoke-to-spoke を実現する (Internet VPN 利用)](https://zenn.dev/microsoft/articles/multiple-hub-spoke-internet-vpn)
