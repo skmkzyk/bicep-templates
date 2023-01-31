@@ -5,11 +5,14 @@ param subnetId string
 param vmName string
 param adminUsername string = 'ikko'
 param keyData string
+
+param vmSize string = 'Standard_B2ms'
 param privateIpAddress string = ''
 param customData string = ''
 param enableNetWatchExtention bool = false
 param enableIPForwarding bool = false
 param usePublicIP bool = false
+param enableAcceleratedNetworking bool = false
 param avsetId string = ''
 param applicationGatewayBackendAddressPoolsId string = ''
 param loadBalancerBackendAddressPoolsId string = ''
@@ -53,6 +56,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
       }
     ]
     enableIPForwarding: enableIPForwarding
+    enableAcceleratedNetworking: enableAcceleratedNetworking
   }
 }
 
@@ -62,7 +66,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   zones: zones
   properties: {
     hardwareProfile: {
-      vmSize: 'Standard_B2ms'
+      vmSize: vmSize
     }
     storageProfile: {
       osDisk: {
