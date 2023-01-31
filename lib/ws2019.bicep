@@ -6,9 +6,12 @@ param vmName string
 param adminUsername string = 'ikko'
 @secure()
 param adminPassword string
+
+param vmSize string = 'Standard_B2ms'
 param privateIpAddress string = ''
 param enableNetWatchExtention bool = false
 param usePublicIP bool = false
+param enableAcceleratedNetworking bool = false
 param loadBalancerBackendAddressPoolsId string = ''
 
 var vmNameSuffix = replace(vmName, 'vm-', '')
@@ -46,6 +49,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
         }
       }
     ]
+    enableAcceleratedNetworking: enableAcceleratedNetworking
   }
 }
 
@@ -55,7 +59,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   zones: zones
   properties: {
     hardwareProfile: {
-      vmSize: 'Standard_B2ms'
+      vmSize: vmSize
     }
     storageProfile: {
       osDisk: {
