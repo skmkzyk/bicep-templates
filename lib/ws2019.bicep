@@ -12,7 +12,8 @@ param privateIpAddress string = ''
 param enableNetWatchExtention bool = false
 param usePublicIP bool = false
 param enableAcceleratedNetworking bool = false
-param loadBalancerBackendAddressPoolsId string = ''
+param loadBalancerBackendAddressPoolId string = ''
+param loadBalancerBackendAddressPools array = []
 
 var vmNameSuffix = replace(vmName, 'vm-', '')
 
@@ -43,8 +44,8 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
           privateIPAllocationMethod: privateIpAddress != '' ? 'Static' : 'Dynamic'
           privateIPAddress: privateIpAddress != '' ? privateIpAddress : null
           publicIPAddress: usePublicIP ? { id: pip.id } : null
-          loadBalancerBackendAddressPools: loadBalancerBackendAddressPoolsId != '' ? [
-            { id: loadBalancerBackendAddressPoolsId }
+          loadBalancerBackendAddressPools: loadBalancerBackendAddressPools != [] ? loadBalancerBackendAddressPools : loadBalancerBackendAddressPoolId != '' ? [
+            { id: loadBalancerBackendAddressPoolId }
           ] : []
         }
       }
