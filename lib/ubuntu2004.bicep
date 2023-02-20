@@ -6,6 +6,8 @@ param vmName string
 param adminUsername string = 'ikko'
 param keyData string
 
+param hostGroupId string = ''
+param hostId string = ''
 param vmSize string = 'Standard_B2ms'
 param enableManagedIdentity bool = false
 param privateIpAddress string = ''
@@ -67,6 +69,8 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   identity: enableManagedIdentity ? { type: 'SystemAssigned' } : null
   zones: zones
   properties: {
+    hostGroup: hostGroupId != '' ? { id: hostGroupId } : null
+    host: hostId != '' ? { id: hostId } : null
     hardwareProfile: {
       vmSize: vmSize
     }
