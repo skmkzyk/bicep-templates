@@ -7,6 +7,7 @@ param adminUsername string = 'ikko'
 @secure()
 param adminPassword string
 
+param hostGroupId string = ''
 param vmSize string = 'Standard_B2ms'
 param privateIpAddress string = ''
 param enableNetWatchExtention bool = false
@@ -59,6 +60,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   location: location
   zones: zones
   properties: {
+    hostGroup: hostGroupId != '' ? { id: hostGroupId } : null
     hardwareProfile: {
       vmSize: vmSize
     }
