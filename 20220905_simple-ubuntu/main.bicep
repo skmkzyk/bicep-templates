@@ -13,7 +13,7 @@ param AzureBastionSubnet_additional_securityRules array
 
 /* ****************************** hub00 ****************************** */
 
-resource vnet_hub00 'Microsoft.Network/virtualNetworks@2022-01-01' = {
+resource vnet_hub00 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   name: 'vnet-hub00'
   location: location01
   properties: {
@@ -41,7 +41,7 @@ resource vnet_hub00 'Microsoft.Network/virtualNetworks@2022-01-01' = {
   }
 }
 
-resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-01-01' = {
+resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
   name: 'vnet-hub00-default-nsg-eastasia'
   location: location01
   properties: {
@@ -49,7 +49,7 @@ resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-01-01' = {
   }
 }
 
-resource nsg_AzureBastionSubnet 'Microsoft.Network/networkSecurityGroups@2022-01-01' = {
+resource nsg_AzureBastionSubnet 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
   name: 'vnet-hub00-AzureBastionSubnet-nsg-eastasia'
   location: location01
   properties: {
