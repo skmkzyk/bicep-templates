@@ -13,7 +13,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-01-01' existing = {
   }
 }
 
-resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
+resource pip 'Microsoft.Network/publicIPAddresses@2022-07-01' = {
   name: 'pip-${_bastionName}'
   location: location
   sku: {
@@ -24,7 +24,7 @@ resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
   }
 }
 
-resource bast01 'Microsoft.Network/bastionHosts@2022-01-01' = {
+resource bast01 'Microsoft.Network/bastionHosts@2022-07-01' = {
   name: _bastionName
   location: location
   sku: {

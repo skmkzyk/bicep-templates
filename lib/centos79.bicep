@@ -19,7 +19,7 @@ param loadBalancerBackendAddressPoolsId string = ''
 
 var vmNameSuffix = replace(vmName, 'vm-', '')
 
-resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (usePublicIP) {
+resource pip 'Microsoft.Network/publicIPAddresses@2022-07-01' = if (usePublicIP) {
   name: 'pip-${vmNameSuffix}'
   location: location
   sku: {
@@ -32,7 +32,7 @@ resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (usePublicIP)
   }
 }
 
-resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
+resource nic 'Microsoft.Network/networkInterfaces@2022-07-01' = {
   name: 'nic-${vmNameSuffix}'
   location: location
   properties: {
@@ -60,7 +60,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
   }
 }
 
-resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
+resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
   name: vmName
   location: location
   zones: zones
