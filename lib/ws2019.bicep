@@ -11,7 +11,7 @@ param hostGroupId string = ''
 param hostId string = ''
 param vmSize string = 'Standard_B2ms'
 param privateIpAddress string = ''
-param enableNetWatchExtention bool = false
+param enableNetworkWatcherExtention bool = false
 param usePublicIP bool = false
 param enableAcceleratedNetworking bool = false
 param loadBalancerBackendAddressPoolId string = ''
@@ -103,13 +103,13 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
     }
   }
 
-  resource netWatchExt 'extensions' = if (enableNetWatchExtention) {
+  resource NetworkWatcherExt 'extensions' = if (enableNetworkWatcherExtention) {
     name: 'AzureNetworkWatcherExtension'
     location: location
     properties: {
       autoUpgradeMinorVersion: true
       publisher: 'Microsoft.Azure.NetworkWatcher'
-      type: 'NetworkWatcherAgentLinux'
+      type: 'NetworkWatcherAgentWindows'
       typeHandlerVersion: '1.4'
     }
   }
