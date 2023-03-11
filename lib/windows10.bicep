@@ -1,13 +1,32 @@
 param location string = 'eastasia'
+param zones array = []
+
 param subnetId string
 param vmName string
 param adminUsername string = 'ikko'
 @secure()
 param adminPassword string
 
+param vmSize string = 'Standard_B2ms'
+param privateIpAddress string = ''
+param usePublicIP bool = false
+
 var vmNameSuffix = replace(vmName, 'vm-', '')
 
-resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
+resource pip 'Microsoft.Network/publicIPAddresses@2022-09-01' = if (usePublicIP) {
+  name: 'pip-${vmNameSuffix}'
+  location: location
+  sku: {
+    name: 'Standard'
+    tier: 'Regional'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
+    deleteOption: 'Delete'
+  }
+}
+
+resource nic 'Microsoft.Network/networkInterfaces@2022-09-01' = {
   name: 'nic-${vmNameSuffix}'
   location: location
   properties: {
@@ -18,19 +37,21 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
           subnet: {
             id: subnetId
           }
-          privateIPAllocationMethod: 'Dynamic'
+          privateIPAllocationMethod: privateIpAddress != '' ? 'Static' : 'Dynamic'
+          privateIPAddress: privateIpAddress != '' ? privateIpAddress : null
         }
       }
     ]
   }
 }
 
-resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
+resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
   name: vmName
   location: location
+  zones: zones
   properties: {
     hardwareProfile: {
-      vmSize: 'Standard_B2ms'
+      vmSize: vmSize
     }
     storageProfile: {
       osDisk: {
@@ -43,7 +64,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
       imageReference: {
         publisher: 'MicrosoftWindowsDesktop'
         offer: 'Windows-10'
-        sku: 'win10-21h2-pro-g2'
+        sku: 'win10-22h2-pro-g2'
         version: 'latest'
       }
     }
@@ -87,3 +108,5 @@ resource shutdown 'Microsoft.DevTestLab/schedules@2018-09-15' = {
     }
   }
 }
+
+output privateIP string = nic.properties.ipConfigurations[0].properties.privateIPAddress
