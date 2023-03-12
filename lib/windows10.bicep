@@ -11,9 +11,16 @@ param vmSize string = 'Standard_B2ms'
 param privateIpAddress string = ''
 param usePublicIP bool = false
 
+@allowed([
+  ''
+  'ConfidentialVM'
+  'TrustedLaunch'
+])
+param securityType string = ''
+
 var vmNameSuffix = replace(vmName, 'vm-', '')
 
-resource pip 'Microsoft.Network/publicIPAddresses@2022-09-01' = if (usePublicIP) {
+resource pip 'Microsoft.Network/publicIPAddresses@2022-07-01' = if (usePublicIP) {
   name: 'pip-${vmNameSuffix}'
   location: location
   sku: {
@@ -26,7 +33,7 @@ resource pip 'Microsoft.Network/publicIPAddresses@2022-09-01' = if (usePublicIP)
   }
 }
 
-resource nic 'Microsoft.Network/networkInterfaces@2022-09-01' = {
+resource nic 'Microsoft.Network/networkInterfaces@2022-07-01' = {
   name: 'nic-${vmNameSuffix}'
   location: location
   properties: {
@@ -68,6 +75,11 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
         version: 'latest'
       }
     }
+    osProfile: {
+      computerName: vmName
+      adminUsername: adminUsername
+      adminPassword: adminPassword
+    }
     networkProfile: {
       networkInterfaces: [
         {
@@ -78,17 +90,19 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
         }
       ]
     }
-    osProfile: {
-      computerName: vmName
-      adminUsername: adminUsername
-      adminPassword: adminPassword
-    }
-    licenseType: 'Windows_Client'
     diagnosticsProfile: {
       bootDiagnostics: {
         enabled: true
       }
     }
+    licenseType: 'Windows_Client'
+    securityProfile: securityType != '' ? {
+      securityType: securityType
+      uefiSettings: {
+        secureBootEnabled: true
+        vTpmEnabled: true
+      }
+    } : null
   }
 }
 
