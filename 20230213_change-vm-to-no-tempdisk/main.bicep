@@ -42,7 +42,7 @@ resource vnet_hub00 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   }
 }
 
-resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-01-01' = {
+resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
   name: 'vnet-hub00-default-nsg-eastasia'
   location: location01
   properties: {
@@ -50,7 +50,7 @@ resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-01-01' = {
   }
 }
 
-resource nsg_AzureBastionSubnet 'Microsoft.Network/networkSecurityGroups@2022-01-01' = {
+resource nsg_AzureBastionSubnet 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
   name: 'vnet-hub00-AzureBastionSubnet-nsg-eastasia'
   location: location01
   properties: {
@@ -69,23 +69,12 @@ module bast00 '../lib/bastion.bicep' = {
 }
 
 var vm00Name = 'vm-hub00'
-module vm_hub00 '../lib/ws2019.bicep' = {
+module vm_hub00 '../lib/windows10.bicep' = {
   name: vm00Name
   params: {
     location: location01
     adminPassword: kv.getSecret(secretName)
     subnetId: filter(vnet_hub00.properties.subnets, subnet => subnet.name == 'default')[0].id
     vmName: vm00Name
-  }
-}
-
-var vm01Name = 'vm-hub01'
-module vm_hub01 '../lib/ws2019.bicep' = {
-  name: vm01Name
-  params: {
-    location: location01
-    adminPassword: kv.getSecret(secretName)
-    subnetId: filter(vnet_hub00.properties.subnets, subnet => subnet.name == 'default')[0].id
-    vmName: vm01Name
   }
 }

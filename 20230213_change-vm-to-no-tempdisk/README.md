@@ -36,7 +36,12 @@ Set-VmSizeToNoTempDisk [-ResourceGroupName] <string> [-LocationName] <string> [-
   最初 `Change-VmSizeToNoTempDisk` にしてたけど動詞として非推奨っぽかったので変えた。
   https://learn.microsoft.com/en-us/powershell/scripting/developer/cmdlet/approved-verbs-for-windows-powershell-commands
 
-- Just simple deployment Windows Server 2019
+- Just simple deployment Windows 10
 
   Bicep としてはこれとほぼ変わってないはず
-  https://github.com/skmkzyk/bicep-templates/tree/main/20221213_simple-ws2019
+  https://github.com/skmkzyk/bicep-templates/tree/main/20230311_simple-windows10
+
+- Microsoft.Compute/virtualMachines
+
+  virtualMachine の Bicep 定義
+  https://learn.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines
