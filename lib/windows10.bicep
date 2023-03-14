@@ -11,6 +11,9 @@ param vmSize string = 'Standard_B2ms'
 param privateIpAddress string = ''
 param usePublicIP bool = false
 
+@minValue(0)
+param numberOfDataDisks int = 0
+
 @allowed([
   ''
   'ConfidentialVM'
@@ -68,6 +71,14 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
         }
         deleteOption: 'Delete'
       }
+      dataDisks: [for i in range(0, numberOfDataDisks): {
+        lun: i
+        createOption: 'Attach'
+        managedDisk: {
+          id: dataDisks[i].id
+        }
+        deleteOption: 'Delete'
+      }]
       imageReference: {
         publisher: 'MicrosoftWindowsDesktop'
         offer: 'Windows-10'
@@ -105,6 +116,20 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
     } : null
   }
 }
+
+resource dataDisks 'Microsoft.Compute/disks@2022-07-02' = [for i in range(0, numberOfDataDisks): {
+  name: '${vmName}_DataDisk_${i}'
+  location: location
+  sku: {
+    name: 'StandardSSD_LRS'
+  }
+  properties: {
+    creationData: {
+      createOption: 'Empty'
+    }
+    diskSizeGB: 32
+  }
+}]
 
 resource shutdown 'Microsoft.DevTestLab/schedules@2018-09-15' = {
   name: 'shutdown-computevm-${vmName}'
