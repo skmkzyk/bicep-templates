@@ -6,6 +6,8 @@ Azure VM を temp disk を持たない SKU に変更する
 
 - 規定では pagefile の location が D:\pagefile.sys になっているので、これを C: に変更する
 - 一時的に Azure VM を削除するため deleteOption が Detach になっているようにする
+- Data disk については for loop 回しているのでたぶん複数の Data disk があっても対応している
+- Trusted Launch の Azure VM を前提として、Trusted Launch の option を有効化して新しい Azure VM を作成する
 
 # 結果
 
