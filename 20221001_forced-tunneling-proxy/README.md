@@ -229,7 +229,7 @@ Originating default network 0.0.0.0/0
 
 # proxy.pac sample
 
-[こちら](https://findproxyforurl.com/example-pac-file/) を参考に適当に修正。
+[Example PAC File](https://findproxyforurl.com/example-pac-file/) を参考に適当に修正。
 `ifconfig.me` に行くときには DIRECT、それ以外は proxy 経由とする。
 
 ```
@@ -247,3 +247,13 @@ function FindProxyForURL(url, host) {
 Windows Server 側ではこのような設定、珍しいことは何もない。
 
 ![proxy settings](./proxy-settings.png)
+
+# 参考
+
+- Example PAC File | FindProxyForURL
+
+  https://findproxyforurl.com/example-pac-file/
+
+- Proxy Auto-Configuration (PAC) file - HTTP | MDN
+
+  https://developer.mozilla.org/en-US/docs/Web/HTTP/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file
