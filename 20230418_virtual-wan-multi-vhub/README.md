@@ -1,7 +1,13 @@
-# Virtual WAN + vhub x5
+# Virtual WAN + vhub + DIY VNet + Branch VNet x32
 
 for を大規模に使いまくった検証環境の作成の例。
 ほとんどコメントアウトしてあるので必要に応じて後日こぴぺする用。
+
+# ToDo
+
+- branch から ExpressRoute 経由で戻って来た時の DIY VNet で戻りの通信用の GatewaySubnet に割り当てる User Defined Route の定義を忘れてる
+
+  今のところ Ubuntu Server でやっているので非対称通信でもなんとかなっているが、Firewall 的な appliance の場合には通信できないと思う
 
 # Azure Portal から vHub の VNet Peering を有効化した場合の REST response
 
@@ -60,7 +66,6 @@ https://learn.microsoft.com/rest/api/virtualwan/hub-virtual-network-connections/
 
 ```bicep
 resource vnet_peering_vhub 'Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@2022-09-01' = {
-  // name: 'peering-vhub00-vnet200'
   name: 'conn-vhub00-vnet200'
   parent: vhubs[0]
   properties: {
@@ -123,7 +128,6 @@ resource vnet_peering_vhub 'Microsoft.Network/virtualHubs/hubVirtualNetworkConne
 
 ```bicep
 resource vnet_peering_vhub 'Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@2022-09-01' = {
-  // name: 'peering-vhub00-vnet200'
   name: 'conn-vhub00-vnet200'
   parent: vhubs[0]
   properties: {
@@ -135,22 +139,89 @@ resource vnet_peering_vhub 'Microsoft.Network/virtualHubs/hubVirtualNetworkConne
 }
 ```
 
-# ExpressRoute circuit をがッと作る
+# ExpressRoute circuit をガッと作る
 
 docs はここらへん。
 
 https://learn.microsoft.com/en-us/azure/templates/microsoft.network/expressroutecircuits
 
+同じ deployment を複数走らせると、すでに AzurePrivatePeering があるといって怒るので、実質 1 回ずつしか実行しないようにする。
+
+こんな感じで、deploy する ExpressRoute circuit の添え字を変えるようにする。
+
+```bicep
+resource circuits_diy 'Microsoft.Network/expressRouteCircuits@2022-09-01' = [for i in [16, 17, 18, 19, 20, 21]: {
+```
+
 # `batchSize` decorator が大事
 
 Connection を 1 つの ExpressRoute Gateway に 2 つ以上並行して作成するとエラーになる。
+
+```bicep
+@batchSize(1)
+resource connections_diy40 'Microsoft.Network/connections@2022-09-01' = [for i in [ 16, 17, 18, 19 ]: {
+  name: 'conn-${ergws_diy[0].name}-${circuits[i].name}'
+  location: location01
+  properties: {
+    connectionType: 'ExpressRoute'
+    virtualNetworkGateway1: {
+      id: ergws_diy[0].outputs.ergwId
+    }
+    peer: {
+      id: circuits[i].id
+    }
+  }
+}]
+```
 
 docs こちら。
 
 https://learn.microsoft.com/azure/azure-resource-manager/bicep/loops#deploy-in-batches
 
+ARS (Azure Route Server) 周りでも注意が必要。
+
+https://zenn.dev/microsoft/articles/fail-if-simultaneously-deployed
+
+# ExpressRoute /30 link address
+
+| virtualcircuit | Primary | Secondary | diy-vnet |
+| --- | --- | --- | --- |
+| virtualcircuit100 | 172.16.2.0/30 | 172.16.6.0/30 | |
+| virtualcircuit101 | 172.16.10.0/30 | 172.16.14.0/30 | |
+| virtualcircuit102 | 172.16.18.0/30 | 172.16.22.0/30 | |
+| virtualcircuit103 | 172.16.26.0/30 | 172.16.30.0/30 | |
+| virtualcircuit104 | 172.16.34.0/30 | 172.16.38.0/30 | |
+| virtualcircuit105 | 172.16.42.0/30 | 172.16.46.0/30 | |
+| virtualcircuit106 | 172.16.50.0/30 | 172.16.54.0/30 | |
+| virtualcircuit107 | 172.16.58.0/30 | 172.16.62.0/30 | |
+| virtualcircuit108 | 172.16.66.0/30 | 172.16.70.0/30 | |
+| virtualcircuit109 | 172.16.74.0/30 | 172.16.78.0/30 | |
+| virtualcircuit110 | 172.16.82.0/30 | 172.16.86.0/30 | |
+| virtualcircuit111 | 172.16.90.0/30 | 172.16.94.0/30 | |
+| virtualcircuit112 | 172.16.98.0/30 | 172.16.102.0/30 | |
+| virtualcircuit113 | 172.16.106.0/30 | 172.16.110.0/30 | |
+| virtualcircuit114 | 172.16.114.0/30 | 172.16.118.0/30 | |
+| virtualcircuit115 | 172.16.122.0/30 | 172.16.126.0/30 | |
+| virtualcircuit116 | 172.16.130.0/30 | 172.16.134.0/30 | vnet40 |
+| virtualcircuit117 | 172.16.138.0/30 | 172.16.142.0/30 | vnet40 |
+| virtualcircuit118 | 172.16.146.0/30 | 172.16.150.0/30 | vnet40 |
+| virtualcircuit119 | 172.16.154.0/30 | 172.16.158.0/30 | vnet40 |
+| virtualcircuit120 | 172.16.162.0/30 | 172.16.166.0/30 | vnet50 |
+| virtualcircuit121 | 172.16.170.0/30 | 172.16.174.0/30 | vnet50 |
+| virtualcircuit122 | 172.16.178.0/30 | 172.16.182.0/30 | vnet50 |
+| virtualcircuit123 | 172.16.186.0/30 | 172.16.190.0/30 | vnet50 |
+| virtualcircuit124 | 172.16.194.0/30 | 172.16.198.0/30 | vnet60 |
+| virtualcircuit125 | 172.16.202.0/30 | 172.16.206.0/30 | vnet60 |
+| virtualcircuit126 | 172.16.210.0/30 | 172.16.214.0/30 | vnet60 |
+| virtualcircuit127 | 172.16.218.0/30 | 172.16.222.0/30 | vnet60 |
+| virtualcircuit128 | 172.16.226.0/30 | 172.16.230.0/30 | vnet70 |
+| virtualcircuit129 | 172.16.234.0/30 | 172.16.238.0/30 | vnet70 |
+| virtualcircuit130 | 172.16.242.0/30 | 172.16.246.0/30 | vnet70 |
+| virtualcircuit131 | 172.16.250.0/30 | 172.16.254.0/30 | vnet70 |
 
 # FRRouting
+
+- sample config #1
 
 ```
 # show run
@@ -254,4 +325,85 @@ route-map rmap-azure-asns permit 10
 exit
 !
 end
+```
+
+- sample config #2
+
+```
+nva40# show run
+Building configuration...
+
+Current configuration:
+!
+frr version 8.5
+frr defaults traditional
+hostname nva40
+log syslog informational
+no ipv6 forwarding
+service integrated-vtysh-config
+!
+ip route 10.200.0.0/16 10.40.0.1
+ip route 10.210.0.0/16 10.40.0.1
+ip route 10.220.0.0/16 10.40.0.1
+ip route 10.40.210.0/24 10.40.0.1
+!
+router bgp 65001
+ neighbor 10.40.210.4 remote-as 65515
+ neighbor 10.40.210.4 ebgp-multihop 255
+ neighbor 10.40.210.5 remote-as 65515
+ neighbor 10.40.210.5 ebgp-multihop 255
+ !
+ address-family ipv4 unicast
+  redistribute static
+  neighbor 10.40.210.4 as-override
+  neighbor 10.40.210.4 soft-reconfiguration inbound
+  neighbor 10.40.210.4 prefix-list PRE-40 out
+  neighbor 10.40.210.4 route-map rmap-bogon-asns in
+  neighbor 10.40.210.4 route-map rmap-azure-asns out
+  neighbor 10.40.210.5 as-override
+  neighbor 10.40.210.5 soft-reconfiguration inbound
+  neighbor 10.40.210.5 prefix-list PRE-40 out
+  neighbor 10.40.210.5 route-map rmap-bogon-asns in
+  neighbor 10.40.210.5 route-map rmap-azure-asns out
+ exit-address-family
+exit
+!
+ip prefix-list PRE-200 seq 5 permit 10.116.0.0/16
+ip prefix-list PRE-200 seq 10 permit 10.117.0.0/16
+ip prefix-list PRE-200 seq 15 permit 10.118.0.0/16
+ip prefix-list PRE-200 seq 20 permit 10.119.0.0/16
+ip prefix-list PRE-200 seq 25 deny any
+ip prefix-list PRE-40 seq 5 permit 10.200.0.0/16
+ip prefix-list PRE-40 seq 10 permit 10.210.0.0/16
+ip prefix-list PRE-40 seq 15 permit 10.220.0.0/16
+ip prefix-list PRE-40 seq 20 deny any
+!
+bgp as-path access-list azure-asns seq 5 permit _65515_
+bgp as-path access-list bogon-asns seq 5 permit _0_
+bgp as-path access-list bogon-asns seq 10 permit _23456_
+bgp as-path access-list bogon-asns seq 15 permit _1310[0-6][0-9]_|_13107[0-1]_
+bgp as-path access-list bogon-asns seq 20 deny _65515_
+bgp as-path access-list bogon-asns seq 25 permit ^65
+!
+route-map rmap-bogon-asns deny 5
+ match as-path bogon-asns
+exit
+!
+route-map rmap-bogon-asns permit 10
+exit
+!
+route-map rmap-azure-asns deny 5
+ match as-path azure-asns
+exit
+!
+route-map rmap-azure-asns permit 10
+exit
+!
+end
+```
+
+# Connection Monitor の Bicep での deploy
+
+```powershell
+Measure-Command { az deployment group create -g NetworkWatcherRG -f main-conmon.bicep}
 ```

@@ -24,7 +24,7 @@ var useExisting = false
 
 var vnet_number = range(4, 2)
 var vnet_number_offset = 4
-var branch_number = range(0, 24)
+var branch_number = range(0, 32)
 
 resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-09-01' existing = {
   name: 'vnet-default-nsg-${location01}'
@@ -40,6 +40,10 @@ resource vnet200 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
 
 resource vnet210 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
   name: 'vnet210'
+}
+
+resource vnet220 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
+  name: 'vnet220'
 }
 
 /* ****************************** DIY Virtual Networks ****************************** */
@@ -92,43 +96,82 @@ resource nsg_hub00_AzureBastionSubnet 'Microsoft.Network/networkSecurityGroups@2
   }
 }
 
-// module peerings_diy200 '../lib/vnet-peering.bicep' = [for i in vnet_number: {
-//   name: 'peering-${vnets_diy[i - vnet_number_offset].name}-${vnet200.name}'
-//   params: {
-//     vnet01Name: vnets_diy[i - vnet_number_offset].name
-//     vnet02Name: vnet200.name
-//   }
-// }]
+module peerings_diy200 '../lib/vnet-peering.bicep' = [for i in vnet_number: {
+  name: 'peering-${vnets_diy[i - vnet_number_offset].name}-${vnet200.name}'
+  params: {
+    vnet01Name: vnets_diy[i - vnet_number_offset].name
+    vnet02Name: vnet200.name
+  }
+}]
 
-// module peerings_diy210 '../lib/vnet-peering.bicep' = [for i in vnet_number: {
-//   name: 'peering-${vnets_diy[i - vnet_number_offset].name}-${vnet210.name}'
+module peerings_diy210 '../lib/vnet-peering.bicep' = [for i in vnet_number: {
+  name: 'peering-${vnets_diy[i - vnet_number_offset].name}-${vnet210.name}'
+  params: {
+    vnet01Name: vnets_diy[i - vnet_number_offset].name
+    vnet02Name: vnet210.name
+  }
+}]
+
+// module peerings_diy220 '../lib/vnet-peering.bicep' = [for i in vnet_number: {
+//   name: 'peering-${vnets_diy[i - vnet_number_offset].name}-${vnet220.name}'
 //   params: {
 //     vnet01Name: vnets_diy[i - vnet_number_offset].name
-//     vnet02Name: vnet210.name
+//     vnet02Name: vnet220.name
 //   }
 // }]
 
 /* ****************************** ExpressRoute Gateways for DIY VNet ****************************** */
 
-// module ergws_diy '../lib/ergw.bicep' = [for i in vnet_number: {
-//   name: 'ergw${padLeft(i * 10, 3, '0')}'
-//   params: {
-//     location: location01
-//     gatewayName: 'ergw${padLeft(i * 10, 3, '0')}'
-//     vnetName: vnets_diy[i - vnet_number_offset].name
-//     useExisting: useExisting
-//   }
-// }]
+module ergws_diy '../lib/ergw.bicep' = [for i in vnet_number: {
+  name: 'ergw${padLeft(i * 10, 3, '0')}'
+  params: {
+    location: location01
+    gatewayName: 'ergw${padLeft(i * 10, 3, '0')}'
+    vnetName: vnets_diy[i - vnet_number_offset].name
+    useExisting: useExisting
+  }
+}]
 
 /* ****************************** ExpressRoute circuit connections for DIY VNet ****************************** */
 
-// resource connections_diy200 'Microsoft.Network/connections@2022-09-01' = [for i in [ 16, 17, 18, 19 ]: {
-//   name: 'conn-${ergws_diy[0].name}-${circuits[i].name}'
+@batchSize(1)
+resource connections_diy40 'Microsoft.Network/connections@2022-09-01' = [for i in [ 16, 17, 18, 19 ]: {
+  name: 'conn-${ergws_diy[0].name}-${circuits[i].name}'
+  location: location01
+  properties: {
+    connectionType: 'ExpressRoute'
+    virtualNetworkGateway1: {
+      id: ergws_diy[0].outputs.ergwId
+    }
+    peer: {
+      id: circuits[i].id
+    }
+  }
+}]
+
+@batchSize(1)
+resource connections_diy50 'Microsoft.Network/connections@2022-09-01' = [for i in [ 20, 21, 22, 23 ]: {
+  name: 'conn-${ergws_diy[1].name}-${circuits[i].name}'
+  location: location01
+  properties: {
+    connectionType: 'ExpressRoute'
+    virtualNetworkGateway1: {
+      id: ergws_diy[1].outputs.ergwId
+    }
+    peer: {
+      id: circuits[i].id
+    }
+  }
+}]
+
+// @batchSize(1)
+// resource connections_diy60 'Microsoft.Network/connections@2022-09-01' = [for i in [ 24, 25, 26, 27 ]: {
+//   name: 'conn-${ergws_diy[2].name}-${circuits[i].name}'
 //   location: location01
 //   properties: {
 //     connectionType: 'ExpressRoute'
 //     virtualNetworkGateway1: {
-//       id: ergws_diy[0].outputs.ergwId
+//       id: ergws_diy[2].outputs.ergwId
 //     }
 //     peer: {
 //       id: circuits[i].id
@@ -136,13 +179,14 @@ resource nsg_hub00_AzureBastionSubnet 'Microsoft.Network/networkSecurityGroups@2
 //   }
 // }]
 
-// resource connections_diy210 'Microsoft.Network/connections@2022-09-01' = [for i in [ 20, 21 ]: {
-//   name: 'conn-${ergws_diy[1].name}-${circuits[i].name}'
+// @batchSize(1)
+// resource connections_diy70 'Microsoft.Network/connections@2022-09-01' = [for i in [ 28, 29, 30, 31 ]: {
+//   name: 'conn-${ergws_diy[3].name}-${circuits[i].name}'
 //   location: location01
 //   properties: {
 //     connectionType: 'ExpressRoute'
 //     virtualNetworkGateway1: {
-//       id: ergws_diy[1].outputs.ergwId
+//       id: ergws_diy[3].outputs.ergwId
 //     }
 //     peer: {
 //       id: circuits[i].id
@@ -150,35 +194,37 @@ resource nsg_hub00_AzureBastionSubnet 'Microsoft.Network/networkSecurityGroups@2
 //   }
 // }]
 
-// module rss_diy '../lib/route-server.bicep' = [for i in vnet_number: {
-//   name: 'rs${padLeft(i * 10, 3, '0')}'
-//   params: {
-//     location: location01
-//     routeServerName: 'rs${padLeft(i * 10, 3, '0')}'
-//     vnetName: vnets_diy[i - vnet_number_offset].name
-//     bgpConnections: [
-//       {
-//         name: nva_dyi[i - vnet_number_offset].name
-//         ip: nva_dyi[i - vnet_number_offset].outputs.privateIP
-//         asn: '65001'
-//       }
-//     ]
-//     useExisting: useExisting
-//   }
-//   dependsOn: [
-//     connections_diy200
-//     connections_diy210
-//   ]
-// }]
+module rss_diy '../lib/route-server.bicep' = [for i in vnet_number: {
+  name: 'rs${padLeft(i * 10, 3, '0')}'
+  params: {
+    location: location01
+    routeServerName: 'rs${padLeft(i * 10, 3, '0')}'
+    vnetName: vnets_diy[i - vnet_number_offset].name
+    bgpConnections: [
+      {
+        name: nva_dyi[i - vnet_number_offset].name
+        ip: nva_dyi[i - vnet_number_offset].outputs.privateIP
+        asn: '65001'
+      }
+    ]
+    useExisting: useExisting
+  }
+  dependsOn: [
+    connections_diy40
+    connections_diy50
+    // connections_diy60
+    // connections_diy70
+  ]
+}]
 
-// module basts_diy '../lib/bastion.bicep' = [for i in vnet_number: {
-//   name: 'bast${i * 10}'
-//   params: {
-//     location: location01
-//     bastionName: 'bast${i * 10}'
-//     vnetName: vnets_diy[i - vnet_number_offset].name
-//   }
-// }]
+module basts_diy '../lib/bastion.bicep' = [for i in vnet_number: {
+  name: 'bast${i * 10}'
+  params: {
+    location: location01
+    bastionName: 'bast${i * 10}'
+    vnetName: vnets_diy[i - vnet_number_offset].name
+  }
+}]
 
 /* ****************************** Test Virtual Machines for DIY VNet ****************************** */
 
@@ -196,14 +242,14 @@ resource nsg_hub00_AzureBastionSubnet 'Microsoft.Network/networkSecurityGroups@2
 
 /* ****************************** NVA Virtual Machines for DIY VNet ****************************** */
 
-// module nva_dyi '../lib/ubuntu2004.bicep' = [for i in vnet_number: {
-//   name: 'nva${i * 10}'
-//   params: {
-//     location: location01
-//     keyData: public_key.properties.publicKey
-//     subnetId: filter(vnets_diy[i - vnet_number_offset].properties.subnets, subnet => subnet.name == 'default')[0].id
-//     vmName: 'nva${i * 10}'
-//     enableIPForwarding: true
-//     privateIpAddress: '10.${i * 10}.0.100'
-//   }
-// }]
+module nva_dyi '../lib/ubuntu2004.bicep' = [for i in vnet_number: {
+  name: 'nva${i * 10}'
+  params: {
+    location: location01
+    keyData: public_key.properties.publicKey
+    subnetId: filter(vnets_diy[i - vnet_number_offset].properties.subnets, subnet => subnet.name == 'default')[0].id
+    vmName: 'nva${i * 10}'
+    enableIPForwarding: true
+    privateIpAddress: '10.${i * 10}.0.100'
+  }
+}]
