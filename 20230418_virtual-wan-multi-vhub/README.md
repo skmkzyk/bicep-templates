@@ -9,6 +9,20 @@ for を大規模に使いまくった検証環境の作成の例。
 
   今のところ Ubuntu Server でやっているので非対称通信でもなんとかなっているが、Firewall 的な appliance の場合には通信できないと思う
 
+# 構成案 #1
+
+構成案 #1 は VWAN と両立せず、DIY VNet だけで構成する案。
+FRRouting の sample config #1 に該当。
+
+# 構成案 #2
+
+構成案 #2 は Virtual WAN と DIY VNet を両立させる案。
+FRRouting の sample config #2 に該当。
+
+参考 docs はこれ。
+
+https://learn.microsoft.com/ja-jp/azure/route-server/about-dual-homed-network
+
 # Azure Portal から vHub の VNet Peering を有効化した場合の REST response
 
 docs はここらへん。
