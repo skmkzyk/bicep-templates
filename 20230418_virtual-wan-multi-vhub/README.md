@@ -198,6 +198,11 @@ https://zenn.dev/microsoft/articles/fail-if-simultaneously-deployed
 
 # ExpressRoute /30 link address
 
+ExpressRoute の Primary と Secondary に指定する /30 の、**ネットワークアドレス + 2** の一覧。
+計算するのがめんどいので /24 分全部一旦メモ。
+今回 ExpressRoute 32 本引く可能性があるので、実質 172.16.0.0/24 の範囲で全部賄える。
+DIY VNet は VWAN じゃなくて VNet を DIY して構成する際の、ぶら下げる VNet を示している。
+
 | virtualcircuit | Primary | Secondary | diy-vnet |
 | --- | --- | --- | --- |
 | virtualcircuit100 | 172.16.2.0/30 | 172.16.6.0/30 | |
