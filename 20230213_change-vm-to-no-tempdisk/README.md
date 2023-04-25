@@ -26,7 +26,7 @@ Set-VmSizeToNoTempDisk [-ResourceGroupName] <string> [-LocationName] <string> [-
 
 - 既存のリソースから Azure VM を作る
 
-  https://zenn.dev/microsoft/articles/create-vm-from-existing-resource
+  https://zenn.dev/skmkzyk/articles/create-vm-from-existing-resource
 
 - PowerShell - Working with Format-Table in Verbose, Debug, Output Streams - Evotec
 

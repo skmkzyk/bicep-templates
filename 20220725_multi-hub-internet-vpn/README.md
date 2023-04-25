@@ -124,4 +124,4 @@ Ethr done, measurement complete.
 
 # 参考
 
-- [複数の Hub-spoke アーキテクチャで spoke-to-spoke を実現する (Internet VPN 利用)](https://zenn.dev/microsoft/articles/multiple-hub-spoke-internet-vpn)
+- [複数の Hub-spoke アーキテクチャで spoke-to-spoke を実現する (Internet VPN 利用)](https://zenn.dev/skmkzyk/articles/multiple-hub-spoke-internet-vpn)

@@ -194,7 +194,7 @@ https://learn.microsoft.com/azure/azure-resource-manager/bicep/loops#deploy-in-b
 
 ARS (Azure Route Server) 周りでも注意が必要。
 
-https://zenn.dev/microsoft/articles/fail-if-simultaneously-deployed
+https://zenn.dev/skmkzyk/articles/fail-if-simultaneously-deployed
 
 # ExpressRoute /30 link address
 
