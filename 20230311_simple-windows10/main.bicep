@@ -12,6 +12,8 @@ resource kv 'Microsoft.KeyVault/vaults@2021-10-01' existing = {
 param default_securityRules array
 param AzureBastionSubnet_additional_securityRules array
 
+var number_of_vms = 1
+
 /* ****************************** hub00 ****************************** */
 
 resource vnet_hub00 'Microsoft.Network/virtualNetworks@2022-07-01' = {
@@ -68,13 +70,12 @@ module bast00 '../lib/bastion.bicep' = {
   }
 }
 
-var vm00Name = 'vm-hub00'
-module vm_hub00 '../lib/windows10.bicep' = {
-  name: vm00Name
+module vm_hub00 '../lib/windows10.bicep' = [for i in range(0, number_of_vms): {
+  name: 'vm-hub${padLeft(i, 2, '0')}'
   params: {
     location: location01
     adminPassword: kv.getSecret(secretName)
     subnetId: filter(vnet_hub00.properties.subnets, subnet => subnet.name == 'default')[0].id
-    vmName: vm00Name
+    vmName: 'vm-hub${padLeft(i, 2, '0')}'
   }
-}
+}]
