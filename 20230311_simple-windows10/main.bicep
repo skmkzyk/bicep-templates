@@ -13,6 +13,7 @@ param default_securityRules array
 param AzureBastionSubnet_additional_securityRules array
 
 var number_of_vms = 1
+var offset_number_of_vms = 0
 
 /* ****************************** hub00 ****************************** */
 
@@ -71,11 +72,11 @@ module bast00 '../lib/bastion.bicep' = {
 }
 
 module vm_hub00 '../lib/windows10.bicep' = [for i in range(0, number_of_vms): {
-  name: 'vm-hub${padLeft(i, 2, '0')}'
+  name: 'vm-hub${padLeft(i + offset_number_of_vms, 2, '0')}'
   params: {
     location: location01
     adminPassword: kv.getSecret(secretName)
     subnetId: filter(vnet_hub00.properties.subnets, subnet => subnet.name == 'default')[0].id
-    vmName: 'vm-hub${padLeft(i, 2, '0')}'
+    vmName: 'vm-hub${padLeft(i + offset_number_of_vms, 2, '0')}'
   }
 }]
