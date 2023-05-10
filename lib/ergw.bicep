@@ -13,6 +13,8 @@ param useExisting bool = false
 ])
 param sku string = 'ErGw1AZ'
 
+var enableAZ = sku == 'ErGw1AZ' || sku == 'ErGw2AZ' || sku == 'ErGw3AZ'
+
 resource vnet01 'Microsoft.Network/virtualNetworks@2022-01-01' existing =  {
   name: vnetName
 
@@ -28,11 +30,11 @@ resource pip01 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
     name: 'Standard'
     tier: 'Regional'
   }
-  zones: [
+  zones: enableAZ ? [
     '1'
     '2'
     '3'
-  ]
+  ] : []
   properties: {
     publicIPAllocationMethod: 'Static'
   }
