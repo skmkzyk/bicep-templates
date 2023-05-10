@@ -5,7 +5,7 @@ Azure Route Server を使った強制トンネリングの環境を作成する�
 # 構成のポイント
 
 - ExpressRoute circuit を適当に作成する
-- ExpressRoute に接続する、クラウド想定の VNet と、オンプレミス想定の VNet を作成する
+- クラウド想定の VNet と、オンプレミス想定の VNet を作成し、ExpressRoute でそれぞれを接続する
 - クラウド想定の VNet には強制トンネリングの影響を回避してリモート接続するための jump server を作成する
 - オンプレミス想定の VNet には ARS (Azure Route Server) と NVA のための Ubuntu Server 20.04 を作成する
 - ARS と NVA の間で BGP の neighbor を張る
