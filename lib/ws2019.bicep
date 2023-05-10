@@ -10,6 +10,17 @@ param adminPassword string
 param hostGroupId string = ''
 param hostId string = ''
 param vmSize string = 'Standard_B2ms'
+
+@allowed([
+  'PremiumV2_LRS'
+  'Premium_LRS'
+  'Premium_ZRS'
+  'StandardSSD_LRS'
+  'StandardSSD_ZRS'
+  'Standard_LRS'
+])
+param storageAccountType string = 'StandardSSD_LRS'
+
 param privateIpAddress string = ''
 param enableNetworkWatcherExtention bool = false
 param usePublicIP bool = false
@@ -70,7 +81,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
       osDisk: {
         createOption: 'FromImage'
         managedDisk: {
-          storageAccountType: 'StandardSSD_LRS'
+          storageAccountType: storageAccountType
         }
         deleteOption: 'Delete'
       }
