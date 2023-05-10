@@ -46,7 +46,7 @@ resource vnet_hub00 'Microsoft.Network/virtualNetworks@2022-07-01' = {
 }
 
 resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
-  name: 'vnet-hub00-default-nsg-eastasia'
+  name: 'vnet-hub00-default-nsg-${location01}'
   location: location01
   properties: {
     securityRules: default_securityRules
@@ -54,7 +54,7 @@ resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
 }
 
 resource nsg_AzureBastionSubnet 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
-  name: 'vnet-hub00-AzureBastionSubnet-nsg-eastasia'
+  name: 'vnet-hub00-AzureBastionSubnet-nsg-${location01}'
   location: location01
   properties: {
     securityRules: concat(default_securityRules, AzureBastionSubnet_additional_securityRules)
