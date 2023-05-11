@@ -137,7 +137,7 @@ module vm_hub00 '../lib/ws2019.bicep' = {
   }
 }
 
-var vm01Name = 'vm-jump01'
+var vm01Name = 'vm-jump00'
 module vm_hub01 '../lib/ws2019.bicep' = {
   name: vm01Name
   params: {
@@ -280,7 +280,7 @@ module vm_nva100 '../lib/ubuntu2004.bicep' = {
   params: {
     location: location01
     keyData: public_key.properties.publicKey
-    subnetId: filter(vnet_hub100.properties.subnets, subnet => subnet.name == 'default')[0].id
+    subnetId: filter(vnet_hub100.properties.subnets, subnet => subnet.name == 'nva')[0].id
     vmName: vm100Name
     privateIpAddress: '10.100.0.10'
     enableIPForwarding: true
