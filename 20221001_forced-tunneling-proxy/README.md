@@ -116,13 +116,9 @@ Oct 25 09:02:54 vm-nva100 watchfrr[3018]: [QDG3Y-BY5TN] staticd state -> up : co
 Oct 25 09:02:54 vm-nva100 watchfrr[3018]: [KWE5Q-QNGFC] all daemons up, doing startup-complete notify
 Oct 25 09:02:54 vm-nva100 frrinit.sh[3008]:  * Started watchfrr
 Oct 25 09:02:54 vm-nva100 systemd[1]: Started FRRouting.
+```
 
-ikko@vm-nva100:~$ sudo -s
-root@vm-nva100:/home/ikko# vtysh
-
-Hello, this is FRRouting (version 8.3.1).
-Copyright 1996-2005 Kunihiro Ishiguro, et al.
-
+```
 vm-nva100# show ip bgp sum
 
 IPv4 Unicast Summary (VRF default):

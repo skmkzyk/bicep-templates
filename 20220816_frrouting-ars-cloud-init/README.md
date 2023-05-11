@@ -14,13 +14,6 @@ https://github.com/skmkzyk/bicep-templates/tree/main/20221024_frrouting-cloud-in
 FRRouting の config が入っているはずなので、ARS との BGP peer の確認と、advertised/received route を確認しておきます。
 
 ```
-ikko@vm-nva00:~$ sudo -s
-
-root@vm-nva00:/home/ikko# vtysh
-
-Hello, this is FRRouting (version 8.3.1).
-Copyright 1996-2005 Kunihiro Ishiguro, et al.
-
 vm-nva00# show ip bgp sum
 
 IPv4 Unicast Summary (VRF default):

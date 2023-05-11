@@ -44,12 +44,7 @@ FRRouting の sample config はこちらです。
 違いがある点としては、10.10.200.0/24 を追加で ARS で経路広報することで、Remote Gateway を使っていない状態でも、Spoke VNet に reachability を提供するものです。
 Remote Gateway を使わずに Hub-Spoke 構成を扱う場合は [Hub-spoke architecture without Remote gateway with VXLAN](https://github.com/skmkzyk/bicep-templates/tree/main/20221006_hub-spoke-wo-remote-gw-vxlan) などが参考になります。
 
-```frrouting
-root@vm-hub00:/home/ikko# vtysh
-
-Hello, this is FRRouting (version 8.4.1).
-Copyright 1996-2005 Kunihiro Ishiguro, et al.
-
+```
 vm-hub00# show run
 Building configuration...
 
@@ -114,7 +109,7 @@ end
 本物の Cisco に入れていた config なので、FRRouting とは互換性がないかと思います。
 また、Azure 上でもこの構成は実現できません。
 
-```cisco
+```
 tky01#show run
 Building configuration...
 

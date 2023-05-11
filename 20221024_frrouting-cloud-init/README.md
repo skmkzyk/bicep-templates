@@ -54,13 +54,7 @@ Azure VM に Bastion 経由でログインし、`sudo -s` で昇格した後に 
 `show run` して、`ip route` の行が含まれているのでこれは `cloud-init` で配置した config を読み込んでいることがわかります。
 今回はデフォルトの `/etc/frr/frr.conf` からの変更点は小さいですが、大きな config もこれで流し込めるはずです。
 
-```shell
-ikko@vm-hub00:~$ sudo -s
-root@vm-hub00:/home/ikko# vtysh
-
-Hello, this is FRRouting (version 8.3.1).
-Copyright 1996-2005 Kunihiro Ishiguro, et al.
-
+```
 vm-hub00# show run
 Building configuration...
 
