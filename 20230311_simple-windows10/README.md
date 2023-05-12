@@ -21,6 +21,6 @@ Connect-MyAzBastionRdp -VMName vm-hub00 -ResourceGroupName simple-ws2019 -Bastio
 
 # 参考
 
-- マルチモニタをオフにして Bastion で RDP を使う
+- PowerShell だけで (Azure CLI を使わずに) Bastion を Native Client で RDP する
 
-  https://zenn.dev/skmkzyk/articles/bastion-without-multimon
+  https://zenn.dev/skmkzyk/articles/bastion-rdp-powershell-only
