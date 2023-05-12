@@ -167,7 +167,7 @@ resource vnet_hub100 'Microsoft.Network/virtualNetworks@2022-11-01' = {
         properties: {
           addressPrefix: '10.100.0.0/24'
           networkSecurityGroup: { id: nsg_nva.id }
-          routeTable: { id: rt_hub00_nvaSubnet.id }
+          routeTable: { id: rt_hub100_nvaSubnet.id }
         }
       }
       {
@@ -210,8 +210,8 @@ resource nsg_nva 'Microsoft.Network/networkSecurityGroups@2022-11-01' = {
   }
 }
 
-resource rt_hub00_nvaSubnet 'Microsoft.Network/routeTables@2022-01-01' = {
-  name: 'rt-nvaSubnet-hub00'
+resource rt_hub100_nvaSubnet 'Microsoft.Network/routeTables@2022-01-01' = {
+  name: 'rt-nvaSubnet-hub100'
   location: location01
   properties: {
     routes: [
@@ -251,6 +251,9 @@ resource conn_hub100 'Microsoft.Network/connections@2022-11-01' = {
     }
     authorizationKey: circuit01.authorizationKey2
   }
+  dependsOn: [
+    rs100
+  ]
 }
 
 var rs100Name = 'rs-hub100'
@@ -269,9 +272,6 @@ module rs100 '../lib/route-server.bicep' = {
     ]
     useExisting: useExisting
   }
-  dependsOn: [
-    conn_hub100
-  ]
 }
 
 var vm100Name = 'vm-nva100'
