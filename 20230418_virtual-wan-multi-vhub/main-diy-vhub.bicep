@@ -49,7 +49,7 @@ resource vnet220 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
 /* ****************************** DIY Virtual Networks ****************************** */
 
 resource vnets_diy 'Microsoft.Network/virtualNetworks@2022-09-01' = [for i in vnet_number: {
-  name: 'vnet${padLeft(i * 10, 3, '0')}'
+  name: 'vnet-diy${padLeft(i * 10, 3, '0')}'
   location: location01
   properties: {
     addressSpace: {
@@ -218,10 +218,10 @@ module rss_diy '../lib/route-server.bicep' = [for i in vnet_number: {
 }]
 
 module basts_diy '../lib/bastion.bicep' = [for i in vnet_number: {
-  name: 'bast${i * 10}'
+  name: 'bast-diy${i * 10}'
   params: {
     location: location01
-    bastionName: 'bast${i * 10}'
+    bastionName: 'bast-diy${i * 10}'
     vnetName: vnets_diy[i - vnet_number_offset].name
   }
 }]
