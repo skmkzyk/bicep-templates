@@ -10,7 +10,65 @@ resource kv 'Microsoft.KeyVault/vaults@2021-10-01' existing = {
 }
 
 param default_securityRules array
-param AzureBastionSubnet_additional_securityRules array
+param AzureBastionSubnet_additional_securityRules array = [
+  {
+    name: 'AllowGatewayManager'
+    properties: {
+      description: 'Allow GatewayManager'
+      protocol: '*'
+      sourcePortRange: '*'
+      destinationPortRange: '443'
+      sourceAddressPrefix: 'GatewayManager'
+      destinationAddressPrefix: '*'
+      access: 'Allow'
+      priority: 2702
+      direction: 'Inbound'
+    }
+  }
+  {
+    name: 'AllowHttpsInBound'
+    properties: {
+      description: 'Allow HTTPs'
+      protocol: '*'
+      sourcePortRange: '*'
+      destinationPortRange: '443'
+      sourceAddressPrefix: 'Internet'
+      destinationAddressPrefix: '*'
+      access: 'Allow'
+      priority: 2703
+      direction: 'Inbound'
+    }
+  }
+  {
+    name: 'AllowSshRdpOutbound'
+    properties: {
+      protocol: '*'
+      sourcePortRange: '*'
+      sourceAddressPrefix: '*'
+      destinationAddressPrefix: 'VirtualNetwork'
+      access: 'Allow'
+      priority: 100
+      direction: 'Outbound'
+      destinationPortRanges: [
+        '22'
+        '3389'
+      ]
+    }
+  }
+  {
+    name: 'AllowAzureCloudOutbound'
+    properties: {
+      protocol: 'TCP'
+      sourcePortRange: '*'
+      destinationPortRange: '443'
+      sourceAddressPrefix: '*'
+      destinationAddressPrefix: 'AzureCloud'
+      access: 'Allow'
+      priority: 110
+      direction: 'Outbound'
+    }
+  }
+]
 
 var number_of_vms = 1
 var offset_number_of_vms = 0
