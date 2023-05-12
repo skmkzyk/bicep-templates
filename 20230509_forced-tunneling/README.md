@@ -94,6 +94,6 @@ end
 
   https://zenn.dev/skmkzyk/articles/azure-route-server-frrouting
 
-- ARS と NVA を使った強制トンネリング環境を作る
+- ARS と FRRouting を使った強制トンネリング環境を作る
 
-  https://zenn.dev/skmkzyk/articles/forced-tunneling-with-ars-and-nva
+  https://zenn.dev/skmkzyk/articles/forced-tunneling-with-ars-and-frrouting
