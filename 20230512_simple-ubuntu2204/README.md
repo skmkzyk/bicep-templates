@@ -1,6 +1,6 @@
-# Just simple deployment Ubuntu Server 20.04
+# Just simple deployment Ubuntu Server 22.04
 
-何も特徴的なことはない、ただ Ubuntu Server 20.04 をデプロイするだけ。
+何も特徴的なことはない、ただ Ubuntu Server 22.04 をデプロイするだけ。
 
 # 構成のポイント
 
