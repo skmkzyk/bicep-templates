@@ -55,9 +55,10 @@ runcmd:
   - sed -i.org 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
   - sysctl -p
   # install FRRouting
-  - curl -s https://deb.frrouting.org/frr/keys.asc | apt-key add -
+  - curl -s https://deb.frrouting.org/frr/keys.asc | gpg --no-default-keyring --keyring /tmp/frrouting-keyring.gpg --import
+  - gpg --no-default-keyring --keyring /tmp/frrouting-keyring.gpg --export --output /usr/share/keyrings/frrouting-keyring.gpg
   - FRRVER="frr-stable"
-  - echo deb https://deb.frrouting.org/frr $(lsb_release -s -c) $FRRVER | tee -a /etc/apt/sources.list.d/frr.list
+  - echo deb [signed-by=/usr/share/keyrings/frrouting-keyring.gpg] https://deb.frrouting.org/frr $(lsb_release -s -c) $FRRVER | tee -a /etc/apt/sources.list.d/frr.list
   - apt update && apt -y install frr frr-pythontools
   - sed -i.org 's/bgpd=no/bgpd=yes/' /etc/frr/daemons
   - cp /tmp/frr.conf /etc/frr/frr.conf

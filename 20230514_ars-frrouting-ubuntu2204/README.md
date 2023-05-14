@@ -2,6 +2,7 @@
 
 FRRouting と Azure Route Server (ARS) との間の BGP peer を `cloud-init` で自動設定してしまおう、という話。
 以前のは Ubuntu Server 20.04 で構成していたのでこれを 22.04 に置き換えたもの。
+`apt-key` が deprecated になったので、`gpg` を使うように変更した。
 
 # 参考
 
