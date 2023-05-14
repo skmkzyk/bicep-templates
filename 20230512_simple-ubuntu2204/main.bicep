@@ -3,7 +3,7 @@ param location01 string = resourceGroup().location
 param sshKeyRGName string
 param publicKeyName string
 
-resource public_key 'Microsoft.Compute/sshPublicKeys@2022-03-01' existing = {
+resource public_key 'Microsoft.Compute/sshPublicKeys@2023-03-01' existing = {
   name: publicKeyName
   scope: resourceGroup(sshKeyRGName)
 }
