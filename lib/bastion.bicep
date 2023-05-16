@@ -1,4 +1,4 @@
-param location string = 'eastasia'
+param location string
 param bastionName string = ''
 param vnetName string
 

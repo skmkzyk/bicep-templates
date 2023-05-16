@@ -1,4 +1,4 @@
-param location string = 'eastasia'
+param location string
 param gatewayName string = 'vpngw01'
 param vnetName string
 param bgpAsn int = 0

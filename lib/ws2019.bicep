@@ -1,4 +1,4 @@
-param location string = 'eastasia'
+param location string
 param zones array = []
 
 param subnetId string

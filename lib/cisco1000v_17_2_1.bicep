@@ -1,33 +1,40 @@
 param location string
+param zones array = []
+
 param subnetId string
 param vmName string
 param adminUsername string = 'ikko'
 param keyData string
+
+param hostGroupId string = ''
+param hostId string = ''
+param vmSize string = 'Standard_B2ms'
+param enableManagedIdentity bool = false
 param privateIpAddress string = ''
 param customData string = ''
-param enableNetWatchExtention bool = false
 param enableIPForwarding bool = false
 param usePublicIP bool = false
+param enableAcceleratedNetworking bool = false
 param avsetId string = ''
 param applicationGatewayBackendAddressPoolsId string = ''
 param loadBalancerBackendAddressPoolsId string = ''
 
 var vmNameSuffix = replace(vmName, 'vm-', '')
 
-// resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (usePublicIP) {
-//   name: 'pip-${vmNameSuffix}'
-//   location: location
-//   sku: {
-//     name: 'Standard'
-//     tier: 'Regional'
-//   }
-//   properties: {
-//     publicIPAllocationMethod: 'Static'
-//     deleteOption: 'Delete'
-//   }
-// }
+resource pip 'Microsoft.Network/publicIPAddresses@2022-07-01' = if (usePublicIP) {
+  name: 'pip-${vmNameSuffix}'
+  location: location
+  sku: {
+    name: 'Standard'
+    tier: 'Regional'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
+    deleteOption: 'Delete'
+  }
+}
 
-resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
+resource nic 'Microsoft.Network/networkInterfaces@2022-07-01' = {
   name: 'nic-${vmNameSuffix}'
   location: location
   properties: {
@@ -38,28 +45,33 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
           subnet: {
             id: subnetId
           }
-          // privateIPAllocationMethod: privateIpAddress != '' ? 'Static' : 'Dynamic'
-          // privateIPAddress: privateIpAddress != '' ? privateIpAddress : null
-          // publicIPAddress: usePublicIP ? { id: pip.id } : null
-          // loadBalancerBackendAddressPools: loadBalancerBackendAddressPoolsId != '' ? [
-          //   { id: loadBalancerBackendAddressPoolsId }
-          // ] : []
-          // applicationGatewayBackendAddressPools: applicationGatewayBackendAddressPoolsId != '' ? [
-          //   { id: applicationGatewayBackendAddressPoolsId }
-          // ] : []
+          privateIPAllocationMethod: privateIpAddress != '' ? 'Static' : 'Dynamic'
+          privateIPAddress: privateIpAddress != '' ? privateIpAddress : null
+          publicIPAddress: usePublicIP ? { id: pip.id } : null
+          loadBalancerBackendAddressPools: loadBalancerBackendAddressPoolsId != '' ? [
+            { id: loadBalancerBackendAddressPoolsId }
+          ] : []
+          applicationGatewayBackendAddressPools: applicationGatewayBackendAddressPoolsId != '' ? [
+            { id: applicationGatewayBackendAddressPoolsId }
+          ] : []
         }
       }
     ]
     enableIPForwarding: enableIPForwarding
+    enableAcceleratedNetworking: enableAcceleratedNetworking
   }
 }
 
-resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
+resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
   name: vmName
   location: location
+  identity: enableManagedIdentity ? { type: 'SystemAssigned' } : null
+  zones: zones
   properties: {
+    hostGroup: hostGroupId != '' ? { id: hostGroupId } : null
+    host: hostId != '' ? { id: hostId } : null
     hardwareProfile: {
-      vmSize: 'Standard_B2ms'
+      vmSize: vmSize
     }
     storageProfile: {
       osDisk: {
@@ -70,9 +82,9 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
         deleteOption: 'Delete'
       }
       imageReference: {
-        publisher: 'MicrosoftCBLMariner'
-        offer: 'cbl-mariner'
-        sku: 'cbl-mariner-2-gen2'
+        publisher: 'cisco'
+        offer: 'cisco-csr-1000v'
+        sku: '17_2_1-byol'
         version: 'latest'
       }
     }
@@ -107,19 +119,8 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
         enabled: true
       }
     }
-    // availabilitySet: avsetId == '' ? null : { id: avsetId }
+    availabilitySet: avsetId == '' ? null : { id: avsetId }
   }
-
-  // resource netWatchExt 'extensions' = if (enableNetWatchExtention) {
-  //   name: 'AzureNetworkWatcherExtension'
-  //   location: location
-  //   properties: {
-  //     autoUpgradeMinorVersion: true
-  //     publisher: 'Microsoft.Azure.NetworkWatcher'
-  //     type: 'NetworkWatcherAgentLinux'
-  //     typeHandlerVersion: '1.4'
-  //   }
-  // }
 }
 
 resource shutdown 'Microsoft.DevTestLab/schedules@2018-09-15' = {
@@ -143,3 +144,4 @@ output vmName string = vm.name
 output vmId string = vm.id
 output nicName string = nic.name
 output privateIP string = nic.properties.ipConfigurations[0].properties.privateIPAddress
+output principalId string = enableManagedIdentity ? vm.identity.principalId : ''

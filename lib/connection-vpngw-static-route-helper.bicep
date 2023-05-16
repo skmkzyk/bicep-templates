@@ -1,4 +1,4 @@
-param location string = 'eastasia'
+param location string
 param vnet02Name string = 'vnet02'
 param pipGateway02Name string = 'pip-vpngw02'
 param vpnGateway01Name string = 'vpngw01'

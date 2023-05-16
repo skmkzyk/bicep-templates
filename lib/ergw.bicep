@@ -1,4 +1,4 @@
-param location string = 'eastasia'
+param location string
 param gatewayName string = 'ergw01'
 param vnetName string
 param useExisting bool = false

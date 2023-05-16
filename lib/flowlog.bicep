@@ -1,4 +1,4 @@
-param location string = 'eastasia'
+param location string
 param nsgName string
 param nsgRGName string
 param stName string
