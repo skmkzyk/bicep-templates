@@ -121,6 +121,11 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
     }
     availabilitySet: avsetId == '' ? null : { id: avsetId }
   }
+  plan: {
+    name: '17_2_1-byol'
+    publisher: 'cisco'
+    product: 'cisco-csr-1000v'
+  }
 }
 
 resource shutdown 'Microsoft.DevTestLab/schedules@2018-09-15' = {
