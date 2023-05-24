@@ -4,7 +4,7 @@ param kvName string
 param kvRGName string
 param secretName string
 
-resource kv 'Microsoft.KeyVault/vaults@2021-10-01' existing = {
+resource kv 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
   name: kvName
   scope: resourceGroup(kvRGName)
 }
@@ -72,7 +72,7 @@ param AzureBastionSubnet_additional_securityRules array = [
 
 /* ****************************** hub00 ****************************** */
 
-resource vnet_hub00 'Microsoft.Network/virtualNetworks@2022-07-01' = {
+resource vnet_hub00 'Microsoft.Network/virtualNetworks@2022-11-01' = {
   name: 'vnet-hub00'
   location: location01
   properties: {
@@ -100,7 +100,7 @@ resource vnet_hub00 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   }
 }
 
-resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
+resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-11-01' = {
   name: 'vnet-hub00-default-nsg-${location01}'
   location: location01
   properties: {
@@ -108,7 +108,7 @@ resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
   }
 }
 
-resource nsg_AzureBastionSubnet 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
+resource nsg_AzureBastionSubnet 'Microsoft.Network/networkSecurityGroups@2022-11-01' = {
   name: 'vnet-hub00-AzureBastionSubnet-nsg-${location01}'
   location: location01
   properties: {
