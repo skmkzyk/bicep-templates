@@ -10,11 +10,69 @@ resource kv 'Microsoft.KeyVault/vaults@2021-10-01' existing = {
 }
 
 param default_securityRules array
-param AzureBastionSubnet_additional_securityRules array
+param AzureBastionSubnet_additional_securityRules array = [
+  {
+    name: 'AllowGatewayManager'
+    properties: {
+      description: 'Allow GatewayManager'
+      protocol: '*'
+      sourcePortRange: '*'
+      destinationPortRange: '443'
+      sourceAddressPrefix: 'GatewayManager'
+      destinationAddressPrefix: '*'
+      access: 'Allow'
+      priority: 2702
+      direction: 'Inbound'
+    }
+  }
+  {
+    name: 'AllowHttpsInBound'
+    properties: {
+      description: 'Allow HTTPs'
+      protocol: '*'
+      sourcePortRange: '*'
+      destinationPortRange: '443'
+      sourceAddressPrefix: 'Internet'
+      destinationAddressPrefix: '*'
+      access: 'Allow'
+      priority: 2703
+      direction: 'Inbound'
+    }
+  }
+  {
+    name: 'AllowSshRdpOutbound'
+    properties: {
+      protocol: '*'
+      sourcePortRange: '*'
+      sourceAddressPrefix: '*'
+      destinationAddressPrefix: 'VirtualNetwork'
+      access: 'Allow'
+      priority: 100
+      direction: 'Outbound'
+      destinationPortRanges: [
+        '22'
+        '3389'
+      ]
+    }
+  }
+  {
+    name: 'AllowAzureCloudOutbound'
+    properties: {
+      protocol: 'TCP'
+      sourcePortRange: '*'
+      destinationPortRange: '443'
+      sourceAddressPrefix: '*'
+      destinationAddressPrefix: 'AzureCloud'
+      access: 'Allow'
+      priority: 110
+      direction: 'Outbound'
+    }
+  }
+]
 
 /* ****************************** hub00 ****************************** */
 
-resource vnet_hub00 'Microsoft.Network/virtualNetworks@2022-07-01' = {
+resource vnet_hub00 'Microsoft.Network/virtualNetworks@2022-11-01' = {
   name: 'vnet-hub00'
   location: location01
   properties: {
@@ -42,16 +100,16 @@ resource vnet_hub00 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   }
 }
 
-resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
-  name: 'vnet-hub00-default-nsg-eastasia'
+resource nsg_default 'Microsoft.Network/networkSecurityGroups@2022-11-01' = {
+  name: 'vnet-hub00-default-nsg-${location01}'
   location: location01
   properties: {
     securityRules: default_securityRules
   }
 }
 
-resource nsg_AzureBastionSubnet 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
-  name: 'vnet-hub00-AzureBastionSubnet-nsg-eastasia'
+resource nsg_AzureBastionSubnet 'Microsoft.Network/networkSecurityGroups@2022-11-01' = {
+  name: 'vnet-hub00-AzureBastionSubnet-nsg-${location01}'
   location: location01
   properties: {
     securityRules: concat(default_securityRules, AzureBastionSubnet_additional_securityRules)
@@ -115,7 +173,7 @@ resource pdns01 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 }
 
 var pe00Name = 'endp-${sa00name}'
-resource pe_akv01 'Microsoft.Network/privateEndpoints@2022-01-01' = {
+resource pe_akv01 'Microsoft.Network/privateEndpoints@2022-11-01' = {
   name: pe00Name
   location: location01
   properties: {
