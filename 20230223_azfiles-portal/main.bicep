@@ -158,11 +158,11 @@ resource sa00 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
-resource pdns01 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+resource pdns00 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: 'privatelink.file.${environment().suffixes.storage}'
   location: 'global'
 
-  resource vnetlink01 'virtualNetworkLinks' = {
+  resource vnetlink00 'virtualNetworkLinks' = {
     name: uniqueString(vnet_hub00.id)
     location: 'global'
     properties: {
@@ -173,7 +173,7 @@ resource pdns01 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 }
 
 var pe00Name = 'endp-${sa00name}'
-resource pe_akv01 'Microsoft.Network/privateEndpoints@2022-11-01' = {
+resource pe_sa00 'Microsoft.Network/privateEndpoints@2022-11-01' = {
   name: pe00Name
   location: location01
   properties: {
@@ -192,14 +192,14 @@ resource pe_akv01 'Microsoft.Network/privateEndpoints@2022-11-01' = {
     ]
   }
 
-  resource zonegroup01 'privateDnsZoneGroups' = {
+  resource zonegroup00 'privateDnsZoneGroups' = {
     name: 'default'
     properties: {
       privateDnsZoneConfigs: [
         {
-          name: replace(pdns01.name, '.', '-')
+          name: replace(pdns00.name, '.', '-')
           properties: {
-            privateDnsZoneId: pdns01.id
+            privateDnsZoneId: pdns00.id
           }
         }
       ]
